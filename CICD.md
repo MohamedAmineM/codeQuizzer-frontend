@@ -94,7 +94,7 @@ Le `Jenkinsfile` y accède via `withCredentials([...])` et se connecte avec
 | `IMAGE` | `mmnassri/codequizzer-frontend` | Nom de l'image (minuscules) |
 | `CONTAINER_NAME` | `codequizzer-frontend` | Nom du conteneur déployé |
 | `DOCKER_NETWORK` | `codequizzer-net` | Réseau Docker (prêt pour un backend) |
-| `HOST_PORT` | `8080` | Port publié sur l'hôte (`HOST:CONTAINER`) |
+| `HOST_PORT` | `8081` | Port publié sur l'hôte (`HOST:CONTAINER`). ⚠️ Pas `8080` : c'est le port de Jenkins lui-même sur l'hôte CI. |
 | `CONTAINER_PORT` | `80` | Port Nginx interne |
 | `DEPLOY_BRANCH` | `claude-v4` | Branche déployée |
 | `DOCKERHUB_CRED` | `dockerhub_cred` | ID du credential Jenkins |
@@ -137,7 +137,7 @@ Rollback **manuel** possible à tout moment :
 ```bash
 docker rm -f codequizzer-frontend
 docker run -d --name codequizzer-frontend --network codequizzer-net \
-  --restart unless-stopped -p 8080:80 mmnassri/codequizzer-frontend:<ANCIEN_BUILD_NUMBER>
+  --restart unless-stopped -p 8081:80 mmnassri/codequizzer-frontend:<ANCIEN_BUILD_NUMBER>
 ```
 
 > Limite assumée d'un rollback « de base » : il y a une brève interruption
@@ -199,10 +199,10 @@ Le socle est déjà « K8s-ready » :
 # Build de l'image de production
 docker build -t mmnassri/codequizzer-frontend:dev .
 
-# Lancer et ouvrir http://localhost:8080
-docker run -d --name codequizzer-frontend -p 8080:80 mmnassri/codequizzer-frontend:dev
+# Lancer et ouvrir http://localhost:8081
+docker run -d --name codequizzer-frontend -p 8081:80 mmnassri/codequizzer-frontend:dev
 docker ps                      # STATUS doit passer à "healthy"
-curl http://localhost:8080/healthz   # -> ok
+curl http://localhost:8081/healthz   # -> ok
 
 # (Optionnel) exécuter les tests unitaires headless comme en CI
 docker build --target test -t cq-test .

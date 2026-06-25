@@ -36,7 +36,7 @@ pipeline {
         CONTAINER_NAME = 'codequizzer-frontend'
         DOCKER_NETWORK = 'codequizzer-net'
 
-        HOST_PORT      = '8080'   // port publié sur l'hôte (changez si 8080 est pris)
+        HOST_PORT      = '8081'   // port publié sur l'hôte (8080 = Jenkins lui-même sur l'hôte CI)
         CONTAINER_PORT = '80'     // port Nginx dans le conteneur
 
         DEPLOY_BRANCH  = 'claude-v4'
