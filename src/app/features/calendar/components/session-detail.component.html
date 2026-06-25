@@ -1,0 +1,138 @@
+@if (session(); as s) {
+  <div class="modal-overlay" (click)="close.emit()">
+    <div class="modal sd" (click)="$event.stopPropagation()">
+
+      <!-- Header -->
+      <div class="sd-head" [style.background]="color(s.language) + '14'">
+        <span class="sd-accent" [style.background]="color(s.language)"></span>
+        <div class="sd-head-main">
+          <div class="sd-tags">
+            <span class="lang-pill" [style.background]="color(s.language)">{{ s.language }} {{ s.level }}</span>
+            <span class="badge" [class]="statusMeta[s.status].badge">{{ statusMeta[s.status].label }}</span>
+          </div>
+          <h2 class="sd-title">{{ s.title || s.language + ' ' + s.level }}</h2>
+        </div>
+        <button class="sd-x" (click)="close.emit()" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+
+      <div class="sd-body">
+        <!-- Join (online/hybrid) -->
+        @if (s.type !== 'in-person' && s.meetingLink) {
+          <a class="btn btn-primary join" [href]="s.meetingLink" target="_blank" rel="noopener">
+            <span class="material-icons">videocam</span>
+            Join Session @if (s.meetingProvider) { · {{ providerLabel[s.meetingProvider] }} }
+          </a>
+        }
+
+        <div class="sd-grid">
+          <div class="sd-field"><span class="material-icons">translate</span><div><span class="f-label">Language</span><span class="f-val">{{ s.language }} · {{ s.level }}</span></div></div>
+          <div class="sd-field"><span class="material-icons">person</span><div><span class="f-label">Teacher</span><span class="f-val">{{ s.teacherName }}</span></div></div>
+          <div class="sd-field"><span class="material-icons">event</span><div><span class="f-label">Date</span><span class="f-val">{{ date() | date:'EEEE, MMM d' }}</span></div></div>
+          <div class="sd-field"><span class="material-icons">schedule</span><div><span class="f-label">Time</span><span class="f-val">{{ s.start }} – {{ s.end }} ({{ duration() }})</span></div></div>
+          <div class="sd-field"><span class="material-icons">{{ typeMeta[s.type].icon }}</span><div><span class="f-label">Type</span><span class="f-val">{{ typeMeta[s.type].label }}</span></div></div>
+          <div class="sd-field"><span class="material-icons">{{ s.type === 'online' ? 'link' : 'place' }}</span><div><span class="f-label">Location</span><span class="f-val">{{ s.location || (s.meetingLink ? (s.meetingProvider ? providerLabel[s.meetingProvider] : 'Online') : '—') }}</span></div></div>
+          @if (s.maxStudents) {
+            <div class="sd-field"><span class="material-icons">groups</span><div><span class="f-label">Capacity</span><span class="f-val">{{ s.attendance.length }} / {{ s.maxStudents }}</span></div></div>
+          }
+        </div>
+
+        @if (s.description) {
+          <div class="sd-notes"><span class="f-label">Notes</span><p>{{ s.description }}</p></div>
+        }
+
+        <!-- Attendance (teacher / admin) -->
+        @if (canManage()) {
+          <div class="att">
+            <div class="att-head">
+              <span class="att-title"><span class="material-icons">fact_check</span> Attendance</span>
+              <span class="att-count">{{ summary().marked }} / {{ summary().total }} marked</span>
+            </div>
+
+            <!-- live summary + progress -->
+            <div class="att-summary">
+              <span class="sum-chip present"><span class="dot"></span>{{ summary().present }}</span>
+              <span class="sum-chip late"><span class="dot"></span>{{ summary().late }}</span>
+              <span class="sum-chip absent"><span class="dot"></span>{{ summary().absent }}</span>
+              <span class="sum-chip excused"><span class="dot"></span>{{ summary().excused }}</span>
+              <span class="att-pct">{{ summary().pct }}%</span>
+            </div>
+            <div class="att-progress"><span [style.width.%]="summary().pct"></span></div>
+
+            <!-- quick actions -->
+            <div class="att-bulk">
+              <button class="bulk-btn present" (click)="allPresent()"><span class="material-icons">done_all</span> All present</button>
+              <button class="bulk-btn" (click)="fillRemaining()"><span class="material-icons">playlist_add_check</span> Fill remaining</button>
+              <button class="bulk-btn absent" (click)="allAbsent()"><span class="material-icons">block</span> All absent</button>
+              <button class="bulk-btn" (click)="clearAll()"><span class="material-icons">restart_alt</span> Clear</button>
+            </div>
+
+            <!-- search + filter (handy for large classes) -->
+            @if (roster().length > 6) {
+              <div class="att-tools">
+                <div class="att-search">
+                  <span class="material-icons">search</span>
+                  <input type="text" placeholder="Find a student…" [value]="search()" (input)="search.set($any($event.target).value)" />
+                </div>
+                <button class="chip-btn" [class.on]="unmarkedOnly()" (click)="unmarkedOnly.set(!unmarkedOnly())">
+                  <span class="material-icons">filter_list</span> Unmarked
+                </button>
+              </div>
+            }
+
+            <!-- roster -->
+            <div class="att-list">
+              @for (a of filteredRoster(); track a.studentId) {
+                <div class="att-row">
+                  <span class="att-student"><span class="att-avatar">{{ a.studentName.charAt(0) }}</span>{{ a.studentName }}</span>
+                  <div class="seg">
+                    @for (st of attendanceOrder; track st) {
+                      <button class="seg-btn" [class.on]="current(a) === st" [style.--c]="attendanceMeta[st].color"
+                              (click)="set(a, st)" [title]="attendanceMeta[st].label">
+                        <span class="material-icons">{{ attendanceMeta[st].icon }}</span>
+                        <span class="seg-label">{{ attendanceMeta[st].label }}</span>
+                      </button>
+                    }
+                  </div>
+                </div>
+              } @empty {
+                <div class="att-empty">
+                  @if (roster().length === 0) { No students enrolled for this language &amp; level yet. }
+                  @else { No students match your filter. }
+                </div>
+              }
+            </div>
+
+            <!-- save bar -->
+            <div class="att-save">
+              @if (dirty()) {
+                <span class="att-state dirty"><span class="material-icons">edit</span> Unsaved changes</span>
+              } @else {
+                <span class="att-state saved"><span class="material-icons">cloud_done</span> All changes saved</span>
+              }
+              <span class="spacer"></span>
+              <button class="btn btn-ghost btn-sm" (click)="discard()" [disabled]="!dirty() || saving()">Discard</button>
+              <button class="btn btn-primary btn-sm" (click)="saveAttendance()" [disabled]="!dirty() || saving()">
+                @if (saving()) { <span class="material-icons spin">progress_activity</span> }
+                Save attendance
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Actions -->
+      @if (canManage()) {
+        <div class="sd-actions">
+          @if (canDelete()) {
+            <button class="btn btn-ghost danger" (click)="deleteSession()"><span class="material-icons">delete</span> Delete</button>
+          }
+          <span class="spacer"></span>
+          @if (s.status !== 'cancelled') {
+            <button class="btn btn-ghost" (click)="cancelSession()"><span class="material-icons">event_busy</span> Cancel session</button>
+          }
+          <button class="btn btn-primary" (click)="editSession()"><span class="material-icons">edit</span> Edit</button>
+        </div>
+      }
+    </div>
+  </div>
+}

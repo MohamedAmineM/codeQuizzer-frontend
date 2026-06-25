@@ -1,0 +1,37 @@
+<div class="lang-switcher" [class.rtl]="i18n.isRtl()">
+
+  <!-- Pilule déclencheur : 🌐 EN ▾ -->
+  <button #trigger type="button" class="lang-trigger" [class.open]="open()"
+          (click)="toggle()"
+          aria-haspopup="listbox" [attr.aria-expanded]="open()"
+          [attr.aria-label]="triggerAriaLabel()"
+          [title]="'lang.switcher.label' | t">
+    <span class="material-icons globe" aria-hidden="true">language</span>
+    <span class="lang-code">{{ current().short }}</span>
+    <span class="material-icons chev" aria-hidden="true">expand_more</span>
+  </button>
+
+  <!-- Menu flottant (glassmorphism) -->
+  @if (open()) {
+    <ul #menu class="lang-menu" role="listbox" tabindex="-1"
+        [attr.aria-label]="'lang.switcher.label' | t"
+        [attr.aria-activedescendant]="optionId(focusedIndex())">
+      @for (lang of languages; track lang.code; let i = $index) {
+        <li class="lang-option"
+            [id]="optionId(i)"
+            role="option"
+            [attr.aria-selected]="isActive(lang)"
+            [class.active]="isActive(lang)"
+            [class.focused]="i === focusedIndex()"
+            (click)="select(lang)"
+            (mouseenter)="focusedIndex.set(i)">
+          <span class="flag" [innerHTML]="flagFor(lang.code)"></span>
+          <span class="lang-name">{{ lang.nativeName }}</span>
+          @if (isActive(lang)) {
+            <span class="material-icons check" aria-hidden="true">check</span>
+          }
+        </li>
+      }
+    </ul>
+  }
+</div>

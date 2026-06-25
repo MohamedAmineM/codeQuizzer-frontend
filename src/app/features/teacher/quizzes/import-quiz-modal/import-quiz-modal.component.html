@@ -1,0 +1,73 @@
+<div class="modal-overlay" (click)="close()">
+  <div class="modal import-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="import-title">
+
+    <header class="import-head">
+      <div>
+        <h2 id="import-title" class="import-title">Import Quiz File</h2>
+        <p class="import-desc">Upload an Excel file containing quiz questions.</p>
+      </div>
+      <button class="close-btn" (click)="close()" aria-label="Fermer">
+        <span class="material-icons">close</span>
+      </button>
+    </header>
+
+    <span class="badge badge-warning soon-badge">
+      <span class="material-icons">schedule</span> Coming Soon
+    </span>
+
+    <!-- Drag & Drop -->
+    <div class="dropzone"
+         [class.dragging]="dragging()"
+         (dragover)="onDragOver($event)"
+         (dragleave)="onDragLeave()"
+         (drop)="onDrop($event)">
+      <span class="material-icons dropzone-icon">cloud_upload</span>
+      <p class="dropzone-text">Glissez-déposez votre fichier ici</p>
+      <p class="dropzone-or">ou</p>
+      <label class="btn btn-ghost browse-btn">
+        <span class="material-icons">folder_open</span>
+        Browse File
+        <input type="file" accept=".xlsx,.xls" hidden (change)="onBrowse($event)" />
+      </label>
+      <p class="dropzone-formats">Formats supportés : <strong>.xlsx</strong>, <strong>.xls</strong></p>
+    </div>
+
+    @if (invalidType()) {
+      <p class="file-error">
+        <span class="material-icons">error</span>
+        Format non supporté. Choisissez un fichier .xlsx ou .xls.
+      </p>
+    }
+
+    <!-- Fichier sélectionné -->
+    @if (file(); as f) {
+      <div class="file-preview">
+        <span class="file-icon material-icons">table_view</span>
+        <div class="file-info">
+          <span class="file-name">{{ f.name }}</span>
+          <span class="file-size">{{ fileSize(f.size) }}</span>
+        </div>
+        <button class="file-remove" (click)="clearFile()" aria-label="Retirer le fichier">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    }
+
+    <!-- Pipeline futur -->
+    <div class="pipeline">
+      <span class="pipeline-title">Une fois l'intégration backend activée :</span>
+      <span class="pipeline-flow">
+        Upload Excel → Quiz Service → RabbitMQ → Notification Service → Étudiants notifiés
+      </span>
+    </div>
+
+    <footer class="import-foot">
+      <button class="btn btn-ghost" (click)="close()">Annuler</button>
+      <button class="btn btn-primary" disabled title="Bientôt disponible">
+        <span class="material-icons">upload</span>
+        Upload
+      </button>
+    </footer>
+
+  </div>
+</div>

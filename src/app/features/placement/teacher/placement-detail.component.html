@@ -1,0 +1,156 @@
+@if (result(); as r) {
+  <div class="page detail">
+
+    <a class="back" routerLink="/teacher/placements">
+      <span class="material-icons">arrow_back</span> All placements
+    </a>
+
+    <div class="detail-grid">
+      <!-- Radar first -->
+      <section class="card radar-first">
+        <div class="card-title"><span class="material-icons">radar</span> Skill Radar</div>
+        <app-radar-chart [axes]="radarAxes()" [size]="320" />
+      </section>
+
+      <!-- Profile -->
+      <section class="card profile">
+        <div class="prof-head">
+          <div class="prof-avatar">{{ r.studentName.charAt(0).toUpperCase() }}</div>
+          <div>
+            <h1 class="prof-name">{{ r.studentName }}</h1>
+            <span class="prof-lang"><span class="material-icons">translate</span>{{ r.language }}</span>
+          </div>
+        </div>
+
+        <div class="prof-stats">
+          <div class="ps">
+            <span class="ps-label">Placement</span>
+            <span class="ps-level">{{ r.finalLevel ?? r.level }}</span>
+          </div>
+          <div class="ps">
+            <span class="ps-label">Confidence</span>
+            <span class="ps-val">{{ r.confidence }}%</span>
+          </div>
+          <div class="ps">
+            <span class="ps-label">Assessed</span>
+            <span class="ps-val sm">{{ r.completedAt | date:'mediumDate' }}</span>
+          </div>
+          <div class="ps">
+            <span class="ps-label">Status</span>
+            @if (r.status === 'approved') { <span class="badge badge-success">Approved</span> }
+            @else if (r.status === 'overridden') { <span class="badge badge-warning">Adjusted</span> }
+            @else { <span class="badge badge-muted">Pending</span> }
+          </div>
+        </div>
+
+        <div class="insight">
+          <span class="material-icons">lightbulb</span>
+          <p>{{ r.teacherInsight }}</p>
+        </div>
+      </section>
+    </div>
+
+    <!-- Recommendation -->
+    <section class="card rec">
+      <div class="card-title"><span class="material-icons">recommend</span> Placement Recommendation</div>
+      <div class="rec-grid">
+        <div class="rec-box primary">
+          <span class="rec-cap">Recommended Group</span>
+          <span class="rec-main">{{ r.recommendedClass }}</span>
+        </div>
+        <div class="rec-box">
+          <span class="rec-cap">Alternative Group</span>
+          <span class="rec-main alt">{{ r.alternativeClass }}</span>
+        </div>
+        <div class="rec-box">
+          <span class="rec-cap">Confidence</span>
+          <span class="rec-main">{{ r.confidence }}%</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="detail-grid">
+      <!-- Skill breakdown -->
+      <section class="card">
+        <div class="card-title"><span class="material-icons">bar_chart</span> Skill Breakdown</div>
+        <div class="skill-list">
+          @for (s of skillRows(); track s.id) {
+            <div class="skill-row">
+              <span class="skill-name"><span class="material-icons">{{ s.icon }}</span>{{ s.label }}</span>
+              <div class="skill-track"><div class="skill-fill" [class]="scoreClass(s.value)" [style.width.%]="s.value"></div></div>
+              <span class="skill-val">{{ s.value }}%</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Strengths & improvements -->
+      <section class="card">
+        <div class="card-title"><span class="material-icons">psychology</span> Profile Summary</div>
+        <div class="sum-block">
+          <span class="sum-h good">Strengths</span>
+          <ul class="bullet good">
+            @for (s of r.strengths; track s) { <li><span class="material-icons">check_circle</span>{{ s }}</li> }
+          </ul>
+        </div>
+        <div class="sum-block">
+          <span class="sum-h warn">Areas for Improvement</span>
+          <ul class="bullet warn">
+            @for (s of r.improvements; track s) { <li><span class="material-icons">priority_high</span>{{ s }}</li> }
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- Class management -->
+    <section class="card manage">
+      <div class="card-title"><span class="material-icons">manage_accounts</span> Class Management</div>
+      <div class="manage-grid">
+        <div class="mg-action">
+          <span class="mg-label">Approve recommended placement</span>
+          <button class="btn btn-primary" (click)="approve()" [disabled]="r.status === 'approved'">
+            <span class="material-icons">check_circle</span>
+            {{ r.status === 'approved' ? 'Approved' : 'Approve ' + r.level }}
+          </button>
+        </div>
+
+        <div class="mg-action">
+          <span class="mg-label">Change placement manually</span>
+          <div class="mg-row">
+            <select class="select" [ngModel]="overrideLevel()" (ngModelChange)="overrideLevel.set($event)">
+              <option value="">Select level…</option>
+              @for (l of levels; track l) { <option [value]="l">{{ l }}</option> }
+            </select>
+            <button class="btn btn-ghost" (click)="applyOverride()" [disabled]="!overrideLevel()">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mg-comment">
+        <span class="mg-label">Teacher comment</span>
+        <textarea class="textarea" rows="3" placeholder="Add a note about this student's placement, goals or next steps…"
+                  [ngModel]="comment()" (ngModelChange)="comment.set($event)"></textarea>
+        <div class="mg-comment-foot">
+          @if (r.reviewedBy) {
+            <span class="reviewed"><span class="material-icons">history</span> Reviewed by {{ r.reviewedBy }} · {{ r.reviewedAt | date:'short' }}</span>
+          } @else { <span></span> }
+          <button class="btn btn-ghost" (click)="saveComment()"><span class="material-icons">save</span> Save comment</button>
+        </div>
+      </div>
+
+      <div class="mg-future">
+        <span class="material-icons">timeline</span>
+        Future progress will be tracked here as the student completes level assessments.
+      </div>
+    </section>
+  </div>
+
+} @else {
+  <div class="page">
+    <div class="empty-state">
+      <span class="material-icons">search_off</span>
+      <h2>Placement not found</h2>
+      <a class="btn btn-primary" routerLink="/teacher/placements"><span class="material-icons">arrow_back</span> Back to placements</a>
+    </div>
+  </div>
+}

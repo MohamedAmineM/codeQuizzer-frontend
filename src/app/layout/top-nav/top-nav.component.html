@@ -1,0 +1,131 @@
+<nav class="topnav">
+  <div class="topnav-inner">
+
+    <!-- LEFT : hamburger (compact) + brand + primary links -->
+    <div class="topnav-left">
+      @if (auth.authenticated() && layout.compact()) {
+        <button class="icon-btn hamburger" (click)="toggleSidebar()" aria-label="Menu">
+          <span class="material-icons">{{ layout.sidebarOpen() ? 'close' : 'menu' }}</span>
+        </button>
+      }
+
+      <a class="brand" routerLink="/" (click)="closeDropdown()">
+        <span class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="24" height="24" rx="7" fill="url(#lg)"/>
+            <path d="M8.5 9L5.5 12L8.5 15" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15.5 9L18.5 12L15.5 15" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13 7.5L11 16.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="lg" x1="0" y1="0" x2="24" y2="24">
+                <stop stop-color="#2563EB"/>
+                <stop offset="1" stop-color="#7C3AED"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </span>
+        <span class="brand-name">Code<span class="brand-accent">Quizzer</span></span>
+      </a>
+
+      <div class="topnav-links">
+        @for (item of nav.topNav; track item.route) {
+          <a class="topnav-link" [routerLink]="item.route" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: item.exact ?? false }">
+            <span class="material-icons">{{ item.icon }}</span>
+            <span class="link-text">{{ nav.label(item) }}</span>
+          </a>
+        }
+
+        @if (auth.authenticated()) {
+          <button class="topnav-link dash-btn" [class.active]="layout.sidebarOpen()"
+                  (click)="openWorkspace()">
+            <span class="material-icons">dashboard</span>
+            <span class="link-text">{{ 'nav.dashboard' | t }}</span>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- RIGHT : command palette + theme + notifications + avatar -->
+    <div class="topnav-right">
+
+      @if (auth.authenticated()) {
+        <button class="icon-btn search-hint" (click)="openCommandPalette()"
+                aria-label="Rechercher (Ctrl+K)" title="Rechercher">
+          <span class="material-icons">search</span>
+          <span class="kbd">⌘K</span>
+        </button>
+      }
+
+      <button class="icon-btn" (click)="theme.toggle()"
+              [attr.aria-label]="theme.isDark() ? 'Mode clair' : 'Mode sombre'"
+              [attr.aria-pressed]="theme.isDark()"
+              [title]="theme.isDark() ? 'Mode clair' : 'Mode sombre'">
+        <span class="material-icons">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+      </button>
+
+      @if (!auth.authenticated()) {
+        <!-- 🌐 Sélecteur de langue — disponible aussi avant connexion -->
+        <app-language-switcher />
+
+        <button class="btn-login" (click)="login()">
+          <span class="material-icons">login</span>
+          Connexion
+        </button>
+      } @else {
+        @if (nav.showNotifications()) {
+          <button class="icon-btn bell-btn" (click)="openNotifications()"
+                  [class.active]="layout.notifOpen()" aria-label="Notifications">
+            <span class="material-icons">notifications</span>
+            @if (notifications.unreadCount() > 0) {
+              <span class="bell-badge">{{ notifications.unreadCount() > 9 ? '9+' : notifications.unreadCount() }}</span>
+            }
+          </button>
+        }
+
+        <!-- 🌐 Sélecteur de langue — entre notifications et avatar (ordre spec) -->
+        <app-language-switcher />
+
+        <div class="avatar-wrap">
+          <button class="avatar" (click)="toggleDropdown()" [class.avatar-open]="dropdownOpen()"
+                  aria-haspopup="true" [attr.aria-expanded]="dropdownOpen()">
+            {{ auth.avatarLetter() }}
+          </button>
+
+          @if (dropdownOpen()) {
+            <div class="dropdown">
+              <div class="dropdown-header">
+                <div class="dropdown-avatar">{{ auth.avatarLetter() }}</div>
+                <div class="dropdown-id">
+                  <span class="dropdown-name">{{ auth.fullName() }}</span>
+                  <span class="dropdown-email">{{ auth.user()?.email }}</span>
+                  @if (auth.roleLabel()) {
+                    <span class="dropdown-role">{{ auth.roleLabel() }}</span>
+                  }
+                </div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" routerLink="/profile" (click)="closeDropdown()">
+                <span class="material-icons">person</span> Profile
+              </a>
+              <button class="dropdown-item" (click)="accountSettings()">
+                <span class="material-icons">manage_accounts</span> Account Settings
+              </button>
+              <a class="dropdown-item" routerLink="/preferences/language" (click)="closeDropdown()">
+                <span class="material-icons">translate</span> Language Preferences
+              </a>
+              <a class="dropdown-item" routerLink="/help" (click)="closeDropdown()">
+                <span class="material-icons">help_center</span> Help Center
+              </a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item danger" (click)="logout()">
+                <span class="material-icons">logout</span> Logout
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+</nav>

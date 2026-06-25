@@ -1,0 +1,73 @@
+<!-- Backdrop (mode compact uniquement) -->
+@if (layout.compact() && layout.sidebarOpen()) {
+  <div class="sidebar-backdrop" (click)="layout.closeSidebar()"></div>
+}
+
+<aside class="sidebar"
+       [class.open]="layout.sidebarOpen()"
+       [class.collapsed]="layout.collapsed() && !layout.compact()"
+       [class.compact]="layout.compact()">
+
+  <!-- Header -->
+  <div class="sidebar-head">
+    <span class="sidebar-head-title">{{ 'sidebar.workspace' | t }}</span>
+    @if (layout.compact()) {
+      <button class="rail-btn" (click)="layout.closeSidebar()" aria-label="Fermer">
+        <span class="material-icons">close</span>
+      </button>
+    } @else {
+      <button class="rail-btn" (click)="layout.toggleCollapse()"
+              [attr.aria-label]="layout.collapsed() ? 'Étendre' : 'Réduire'"
+              [title]="layout.collapsed() ? 'Étendre' : 'Réduire'">
+        <span class="material-icons">{{ layout.collapsed() ? 'chevron_right' : 'chevron_left' }}</span>
+      </button>
+    }
+  </div>
+
+  <nav class="sidebar-nav">
+
+    <!-- Liens principaux repris en mode compact (sinon dans la top-nav) -->
+    @if (layout.compact()) {
+      <div class="nav-section">
+        <span class="section-title">{{ 'sidebar.browse' | t }}</span>
+        @for (item of nav.topNav; track item.route) {
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: item.exact ?? false }" (click)="onItemClick()">
+            <span class="nav-item-icon"><span class="material-icons">{{ item.icon }}</span></span>
+            <span class="nav-item-label">{{ nav.label(item) }}</span>
+          </a>
+        }
+      </div>
+    }
+
+    @for (section of nav.sidebarSections(); track section.title) {
+      <div class="nav-section">
+        <span class="section-title">{{ nav.sectionTitle(section) }}</span>
+        @for (item of section.items; track item.route) {
+          <a class="nav-item" [routerLink]="item.route" routerLinkActive="active"
+             [routerLinkActiveOptions]="{ exact: item.exact ?? false }" (click)="onItemClick()"
+             [attr.title]="layout.collapsed() && !layout.compact() ? nav.label(item) : null">
+            <span class="active-bar"></span>
+            <span class="nav-item-icon">
+              <span class="material-icons">{{ item.icon }}</span>
+              @if (badgeFor(item) > 0) { <span class="icon-dot"></span> }
+            </span>
+            <span class="nav-item-label">{{ nav.label(item) }}</span>
+            @if (badgeFor(item) > 0) {
+              <span class="nav-item-badge">{{ badgeFor(item) > 9 ? '9+' : badgeFor(item) }}</span>
+            }
+          </a>
+        }
+      </div>
+    }
+  </nav>
+
+  <!-- Footer : mini profil -->
+  <div class="sidebar-foot">
+    <div class="foot-avatar">{{ auth.avatarLetter() }}</div>
+    <div class="foot-id">
+      <span class="foot-name">{{ auth.fullName() }}</span>
+      <span class="foot-role">{{ auth.roleLabel() }}</span>
+    </div>
+  </div>
+</aside>

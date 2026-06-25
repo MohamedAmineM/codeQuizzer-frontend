@@ -1,0 +1,101 @@
+<!-- ══════════ WEEK / DAY (time-grid) ══════════ -->
+@if (view() === 'week' || view() === 'day') {
+  <div class="tg" [class.day-view]="view() === 'day'">
+    <div class="tg-head">
+      <div class="tg-gutter-h"></div>
+      @for (d of timeGrid(); track d.date) {
+        <div class="tg-dayhead" [class.today]="d.isToday">
+          <span class="dh-name">{{ d.label }}</span>
+          <span class="dh-num" [class.today]="d.isToday">{{ d.dayNum }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="tg-body">
+      <div class="tg-gutter">
+        @for (h of hours; track h) { <div class="tg-hour"><span>{{ h }}:00</span></div> }
+      </div>
+      @for (d of timeGrid(); track d.date) {
+        <div class="tg-col" [class.today]="d.isToday">
+          @for (h of hours; track h) { <div class="tg-slot"></div> }
+          @if (d.nowPct !== null) { <div class="tg-now" [style.top.%]="d.nowPct"></div> }
+          @for (e of d.events; track e.s.id) {
+            <button class="tg-event" [class.cancelled]="e.s.status === 'cancelled'"
+                    [style.top.%]="e.top" [style.height.%]="e.height"
+                    [style.left.%]="e.left" [style.width.%]="e.width"
+                    [style.border-left-color]="color(e.s.language)"
+                    [style.background]="color(e.s.language) + '14'"
+                    (click)="emit(e.s)">
+              <span class="te-time">{{ e.s.start }}–{{ e.s.end }}</span>
+              <span class="te-title">{{ e.s.title || e.s.language + ' ' + e.s.level }}</span>
+              <span class="te-meta">
+                <span class="material-icons">{{ typeMeta[e.s.type].icon }}</span>
+                {{ e.s.location || typeMeta[e.s.type].label }}
+              </span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}
+
+<!-- ══════════ MONTH ══════════ -->
+@if (view() === 'month') {
+  <div class="mo">
+    <div class="mo-head">
+      @for (w of weekdayHeaders; track w) { <div class="mo-dow">{{ w }}</div> }
+    </div>
+    <div class="mo-grid">
+      @for (week of month(); track $index) {
+        @for (d of week; track d.date) {
+          <div class="mo-cell" [class.dim]="!d.inMonth" [class.today]="d.isToday">
+            <span class="mo-num" [class.today]="d.isToday">{{ d.dayNum }}</span>
+            <div class="mo-events">
+              @for (s of d.events.slice(0, 3); track s.id) {
+                <button class="mo-chip" [class.cancelled]="s.status === 'cancelled'"
+                        [style.background]="color(s.language) + '1f'" [style.color]="color(s.language)"
+                        (click)="emit(s)">
+                  <span class="dot" [style.background]="color(s.language)"></span>
+                  <span class="ch-time">{{ s.start }}</span> {{ s.language }} {{ s.level }}
+                </button>
+              }
+              @if (d.events.length > 3) { <span class="mo-more">+{{ d.events.length - 3 }} more</span> }
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+}
+
+<!-- ══════════ AGENDA ══════════ -->
+@if (view() === 'agenda') {
+  <div class="ag">
+    @if (agenda().length === 0) {
+      <div class="empty-state"><span class="material-icons">event_busy</span><span>No sessions to show</span></div>
+    }
+    @for (g of agenda(); track g.iso) {
+      <div class="ag-group">
+        <div class="ag-date">
+          <span class="ag-dow">{{ g.date | date:'EEE' }}</span>
+          <span class="ag-dnum">{{ g.date | date:'d' }}</span>
+          <span class="ag-mon">{{ g.date | date:'MMM' }}</span>
+        </div>
+        <div class="ag-items">
+          @for (s of g.sessions; track s.id) {
+            <button class="ag-item" [class.cancelled]="s.status === 'cancelled'"
+                    [style.border-left-color]="color(s.language)" (click)="emit(s)">
+              <span class="ag-time">{{ s.start }} – {{ s.end }}</span>
+              <span class="ag-main">
+                <span class="ag-title">{{ s.title || s.language + ' ' + s.level }}</span>
+                <span class="ag-sub">{{ s.language }} {{ s.level }} · {{ s.teacherName }}</span>
+              </span>
+              <span class="ag-type"><span class="material-icons">{{ typeMeta[s.type].icon }}</span>{{ typeMeta[s.type].label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

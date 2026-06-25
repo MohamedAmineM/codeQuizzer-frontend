@@ -1,0 +1,57 @@
+.cs {
+  min-height: calc(100vh - var(--navbar-h) - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cs-card {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  animation: fadeInUp 0.4s ease;
+}
+.cs-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--secondary-light);
+  color: var(--secondary);
+  margin-bottom: var(--space-5);
+}
+.cs-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-xl);
+  background: var(--gradient-brand);
+  color: #fff;
+  box-shadow: var(--shadow-primary);
+}
+.cs-ic .material-icons { font-size: 42px; }
+.cs-title { font-size: 24px; letter-spacing: -0.4px; margin-bottom: 10px; }
+.cs-blurb { color: var(--text-muted); font-size: 15px; line-height: 1.65; margin: 0 auto var(--space-5); max-width: 380px; }
+.cs-actions { display: flex; justify-content: center; }
+.cs-dots { display: flex; justify-content: center; gap: 8px; margin-top: var(--space-6); }
+.cs-dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  animation: pulse 1.4s infinite ease-in-out;
+}
+.cs-dots span:nth-child(2) { animation-delay: 0.2s; }
+.cs-dots span:nth-child(3) { animation-delay: 0.4s; }

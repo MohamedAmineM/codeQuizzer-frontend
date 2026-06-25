@@ -1,0 +1,89 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Notifications</h1>
+      <p class="page-subtitle">
+        @if (store.unreadCount() > 0) {
+          {{ store.unreadCount() }} notification(s) non lue(s)
+        } @else {
+          Vous êtes à jour 🎉
+        }
+      </p>
+    </div>
+    @if (store.unreadCount() > 0) {
+      <button class="btn btn-ghost" (click)="store.markAllAsRead()">
+        <span class="material-icons">done_all</span>
+        Tout marquer comme lu
+      </button>
+    }
+  </div>
+
+  <!-- Filtres -->
+  <div class="filter-bar">
+    @for (f of filters; track f.value) {
+      <button class="filter-chip" [class.active]="filter() === f.value" (click)="filter.set(f.value)">
+        {{ f.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Skeletons -->
+  @if (store.loading()) {
+    <div class="notif-list">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="card notif-skeleton">
+          <div class="skeleton sk-icon"></div>
+          <div class="sk-lines">
+            <div class="skeleton sk-line w60"></div>
+            <div class="skeleton sk-line w90"></div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else if (visible().length === 0) {
+    <div class="card">
+      <div class="empty-state">
+        <span class="material-icons">notifications_off</span>
+        <h3>Aucune notification</h3>
+        <p>Rien à afficher pour ce filtre. Revenez plus tard !</p>
+      </div>
+    </div>
+  } @else {
+    <div class="notif-list">
+      @for (n of visible(); track n.id) {
+        <article class="card hoverable notif-card" [class.unread]="!n.read" (click)="openDetail(n)">
+          <span class="notif-icon" [style.color]="meta(n.type).color">
+            <span class="material-icons">{{ meta(n.type).icon }}</span>
+          </span>
+
+          <div class="notif-body">
+            <div class="notif-top">
+              <h3 class="notif-title">{{ n.title }}</h3>
+              @if (!n.read) { <span class="badge">Nouveau</span> }
+              <span class="badge badge-muted">{{ meta(n.type).label }}</span>
+              <button class="notif-delete" title="Supprimer" (click)="onDelete($event, n)">
+                <span class="material-icons">delete_outline</span>
+              </button>
+            </div>
+            <p class="notif-message">{{ n.message }}</p>
+
+            <div class="notif-foot">
+              <span class="notif-time">
+                <span class="material-icons">schedule</span>
+                {{ n.createdAt | timeAgo }}
+              </span>
+              @if (actionFor(n); as action) {
+                <button class="btn btn-primary btn-sm" (click)="onAction($event, n)">
+                  {{ action.label }}
+                  <span class="material-icons">arrow_forward</span>
+                </button>
+              }
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+
+</div>

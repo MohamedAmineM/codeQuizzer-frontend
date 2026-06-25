@@ -1,0 +1,8 @@
+.table-card { padding: var(--space-3) var(--space-4); }
+
+.cell-title { font-weight: 600; }
+.cell-muted { color: var(--text-muted); }
+
+.import-btn { animation: fadeInUp 0.4s ease; }
+
+.sk-row { height: 48px; margin: 10px 0; }

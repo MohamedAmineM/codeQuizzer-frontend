@@ -1,0 +1,114 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">My Students</h1>
+      <p class="page-subtitle">Étudiants inscrits dans vos catégories et leur progression.</p>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  @if (svc.loading()) {
+    <div class="stat-grid">
+      @for (i of [1, 2, 3]; track i) { <div class="stat-card"><div class="skeleton sk-stat"></div></div> }
+    </div>
+  } @else {
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-icons">groups</span></span>
+        <div>
+          <div class="stat-value">{{ svc.data().totalStudents }}</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon success"><span class="material-icons">how_to_reg</span></span>
+        <div>
+          <div class="stat-value">{{ svc.data().activeStudents }}</div>
+          <div class="stat-label">Active Enrollments</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon accent"><span class="material-icons">trending_up</span></span>
+        <div>
+          <div class="stat-value">{{ svc.data().averageScore }}%</div>
+          <div class="stat-label">Average Score</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="material-icons">search</span>
+      <input type="text" placeholder="Rechercher un étudiant ou une langue…"
+             [value]="search()" (input)="onSearch($event)" />
+    </div>
+    <div class="filters">
+      <div class="role-filters">
+        <button class="filter-chip" [class.active]="levelFilter() === 'ALL'" (click)="levelFilter.set('ALL')">Tous</button>
+        @for (lvl of levels; track lvl) {
+          <button class="filter-chip" [class.active]="levelFilter() === lvl" (click)="levelFilter.set(lvl)">{{ lvl }}</button>
+        }
+      </div>
+      <select class="score-select" (change)="onMinScore($event)">
+        @for (o of minScoreOptions; track o.value) { <option [value]="o.value">{{ o.label }}</option> }
+      </select>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    @if (svc.loading()) {
+      @for (i of [1, 2, 3, 4, 5]; track i) { <div class="skeleton sk-row"></div> }
+    } @else if (visible().length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">school</span>
+        <h3>Aucun étudiant</h3>
+        <p>Aucun étudiant ne correspond à la recherche, ou aucun n'est encore inscrit dans vos catégories.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table-pro">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Category</th>
+              <th>Level</th>
+              <th>Score</th>
+              <th>Progress</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (s of visible(); track $index) {
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="user-avatar">{{ initials(s.studentName) }}</span>
+                    <span class="user-name">{{ s.studentName }}</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-accent">{{ s.categoryName }}</span></td>
+                <td><span class="level-tag">{{ s.currentLevel }}</span></td>
+                <td>
+                  <div class="score-cell">
+                    <div class="score-track"><div class="score-fill" [style.width.%]="s.score"></div></div>
+                    <span class="score-num">{{ s.score }}%</span>
+                  </div>
+                </td>
+                <td>
+                  @if (s.eligibleForPromotion) {
+                    <span class="badge badge-success">{{ s.progressLabel }}</span>
+                  } @else {
+                    <span class="cell-muted">{{ s.progressLabel }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+</div>

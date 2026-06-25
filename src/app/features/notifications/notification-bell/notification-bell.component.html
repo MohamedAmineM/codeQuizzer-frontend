@@ -1,0 +1,47 @@
+<div class="bell-wrap">
+  <button class="bell" (click)="toggle()" [class.bell-open]="open()"
+          aria-label="Notifications" aria-haspopup="true" [attr.aria-expanded]="open()">
+    <span class="material-icons">notifications</span>
+    @if (store.unreadCount() > 0) {
+      <span class="bell-badge">{{ store.unreadCount() > 9 ? '9+' : store.unreadCount() }}</span>
+    }
+  </button>
+
+  @if (open()) {
+    <div class="bell-dropdown">
+      <div class="bell-head">
+        <span class="bell-head-title">Notifications</span>
+        @if (store.unreadCount() > 0) {
+          <button class="bell-mark-all" (click)="store.markAllAsRead()">Tout marquer lu</button>
+        }
+      </div>
+
+      @if (store.latest().length === 0) {
+        <div class="empty-state bell-empty">
+          <span class="material-icons">notifications_off</span>
+          <span>Aucune notification</span>
+        </div>
+      } @else {
+        <div class="bell-list">
+          @for (n of store.latest(); track n.id) {
+            <button class="bell-item" [class.unread]="!n.read" (click)="openNotification(n)">
+              <span class="bell-item-icon" [style.color]="meta(n.type).color">
+                <span class="material-icons">{{ meta(n.type).icon }}</span>
+              </span>
+              <span class="bell-item-body">
+                <span class="bell-item-title">{{ n.title }}</span>
+                <span class="bell-item-time">{{ n.createdAt | timeAgo }}</span>
+              </span>
+              @if (!n.read) { <span class="bell-dot"></span> }
+            </button>
+          }
+        </div>
+      }
+
+      <a class="bell-footer" routerLink="/notifications" (click)="close()">
+        Voir toutes les notifications
+        <span class="material-icons">arrow_forward</span>
+      </a>
+    </div>
+  }
+</div>

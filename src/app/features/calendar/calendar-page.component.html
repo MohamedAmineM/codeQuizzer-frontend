@@ -1,0 +1,80 @@
+<div class="page cal-page">
+
+  <!-- Toolbar -->
+  <div class="cal-bar">
+    <div class="cal-bar-left">
+      <h1 class="cal-title">Calendar</h1>
+      <div class="nav-group">
+        <button class="nav-ic" (click)="shift(-1)" aria-label="Previous"><span class="material-icons">chevron_left</span></button>
+        <button class="today-btn" (click)="today()">Today</button>
+        <button class="nav-ic" (click)="shift(1)" aria-label="Next"><span class="material-icons">chevron_right</span></button>
+      </div>
+      <span class="period">{{ periodLabel() }}</span>
+    </div>
+
+    <div class="cal-bar-right">
+      <div class="view-switch">
+        @for (v of views(); track v) {
+          <button class="vs-btn" [class.on]="view() === v" (click)="setView(v)">
+            {{ v === 'agenda' ? 'Agenda' : (v === 'day' ? 'Day' : (v === 'week' ? 'Week' : 'Month')) }}
+          </button>
+        }
+      </div>
+      <button class="btn btn-ghost" (click)="exportICS()" title="Export to ICS">
+        <span class="material-icons">ios_share</span><span class="hide-sm">Export</span>
+      </button>
+      @if (canManage()) {
+        <button class="btn btn-primary" (click)="openNew()">
+          <span class="material-icons">add</span><span class="hide-sm">New session</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Read-only banner (students) -->
+  @if (isStudentOnly()) {
+    <div class="ro-note">
+      <span class="material-icons">visibility</span>
+      Your personal schedule — sessions for the languages and levels you’re enrolled in.
+    </div>
+  }
+
+  <!-- Admin filters -->
+  @if (auth.isAdmin()) {
+    <div class="filters">
+      <span class="filters-label"><span class="material-icons">filter_list</span> Filters</span>
+      <select class="f-select" [ngModel]="filters().teacherId" (ngModelChange)="patchFilter('teacherId', $event)">
+        <option value="">All teachers</option>
+        @for (t of teachers; track t.id) { <option [value]="t.id">{{ t.name }}</option> }
+      </select>
+      <select class="f-select" [ngModel]="filters().language" (ngModelChange)="patchFilter('language', $event)">
+        <option value="">All languages</option>
+        @for (l of languages; track l) { <option [value]="l">{{ l }}</option> }
+      </select>
+      <select class="f-select" [ngModel]="filters().level" (ngModelChange)="patchFilter('level', $event)">
+        <option value="">All levels</option>
+        @for (l of levels; track l) { <option [value]="l">{{ l }}</option> }
+      </select>
+      <select class="f-select" [ngModel]="filters().type" (ngModelChange)="patchFilter('type', $event)">
+        <option value="">All types</option>
+        @for (t of typeOptions; track t) { <option [value]="t">{{ t === 'in-person' ? 'In-Person' : (t === 'online' ? 'Online' : 'Hybrid') }}</option> }
+      </select>
+      <button class="btn-link" (click)="resetFilters()">Reset</button>
+    </div>
+  }
+
+  <!-- Calendar -->
+  <app-calendar-grid [sessions]="visible()" [view]="view()" [anchor]="anchor()" (open)="openDetail($event)" />
+
+</div>
+
+<!-- Modals -->
+@if (detailId()) {
+  <app-session-detail [sessionId]="detailId()!" [canManage]="canManage()" [canDelete]="canDelete()"
+                      (close)="closeDetail()" (edit)="openEdit($event)" />
+}
+@if (formOpen()) {
+  <app-session-form [editId]="formEditId()" [canPickTeacher]="canPickTeacher()"
+                    [defaultTeacher]="myTeacherRef()" [defaultDate]="toISODate(anchor())"
+                    (close)="closeForm()" (saved)="closeForm()" />
+}

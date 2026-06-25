@@ -1,0 +1,106 @@
+.lang-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--space-4);
+}
+
+.lang-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border-top: 3px solid var(--cat-color, var(--primary));
+}
+
+.lang-item-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.lang-item-icon { font-size: 2rem; line-height: 1; }
+.lang-item-title { flex: 1; }
+.lang-item-title h2 { margin: 0; font-size: 1.2rem; color: var(--text); }
+.lang-item-teacher {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+}
+.lang-item-teacher .material-icons { font-size: 1rem; }
+
+/* Échelle A1..C2 */
+.level-ladder { display: flex; gap: 6px; flex-wrap: wrap; }
+.level-pill {
+  flex: 1;
+  min-width: 38px;
+  text-align: center;
+  padding: 5px 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-muted, #6b7280);
+  border: 1px solid var(--border);
+}
+.level-pill.done { background: color-mix(in srgb, var(--cat-color, var(--primary)) 18%, transparent); color: var(--text); border-color: transparent; }
+.level-pill.current { background: var(--cat-color, var(--primary)); color: #fff; border-color: transparent; }
+
+/* Barre de progression du niveau courant */
+.level-progress-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.level-progress-score { color: var(--cat-color, var(--primary)); }
+.progress-track {
+  height: 8px;
+  background: var(--bg);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--cat-color, var(--primary));
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+.level-req {
+  margin: 8px 0 0;
+  font-size: 0.83rem;
+  color: var(--text-muted, #6b7280);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.level-req .material-icons { font-size: 1.05rem; color: var(--warning); }
+
+.lang-item-actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+
+/* Historique */
+.history-empty { font-size: 0.85rem; color: var(--text-muted, #6b7280); margin: 0; }
+.history-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 8px 10px;
+  background: var(--bg);
+  border-radius: var(--radius-sm);
+  font-size: 0.83rem;
+}
+.history-action {
+  font-weight: 700;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--border);
+  color: var(--text);
+  white-space: nowrap;
+}
+.history-action.ha-level_up { background: color-mix(in srgb, var(--success) 22%, transparent); color: var(--success); }
+.history-action.ha-enrolled { background: color-mix(in srgb, var(--primary) 18%, transparent); color: var(--primary); }
+.history-detail { flex: 1; color: var(--text); }
+.history-date { color: var(--text-muted, #6b7280); white-space: nowrap; }

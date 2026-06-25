@@ -1,0 +1,111 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">My Languages</h1>
+      <p class="page-subtitle">Vos langues, niveaux et progression.</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/languages/enroll">
+      <span class="material-icons">add</span> Ajouter une langue
+    </a>
+  </div>
+
+  @if (enrollment.loading()) {
+    <div class="lang-cards">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="card"><div class="skeleton" style="height: 130px;"></div></div>
+      }
+    </div>
+  } @else if (enrollment.enrollments().length === 0) {
+    <div class="empty-state">
+      <span class="material-icons">translate</span>
+      <h3>Aucune langue</h3>
+      <p>Choisissez les langues que vous voulez apprendre.</p>
+      <a class="btn btn-primary" routerLink="/languages/enroll">
+        <span class="material-icons">add</span> Choisir mes langues
+      </a>
+    </div>
+  } @else {
+    <div class="lang-cards">
+      @for (e of enrollment.enrollments(); track e.categoryId) {
+        <section class="card lang-item" [style.--cat-color]="e.color">
+
+          <div class="lang-item-head">
+            <span class="lang-item-icon">{{ e.icon }}</span>
+            <div class="lang-item-title">
+              <h2>{{ e.categoryName }}</h2>
+              <span class="lang-item-teacher"><span class="material-icons">person</span>{{ e.teacherName || '—' }}</span>
+            </div>
+            <span class="badge" [class.badge-success]="e.status === 'COMPLETED'" [class.badge-accent]="e.status === 'ACTIVE'">
+              {{ e.status === 'COMPLETED' ? 'Terminé' : 'En cours' }}
+            </span>
+          </div>
+
+          <div class="level-ladder">
+            @for (lvl of levels; track lvl; let idx = $index) {
+              <span class="level-pill"
+                    [class.done]="idx + 1 < e.currentLevelRank"
+                    [class.current]="lvl === e.currentLevel">{{ lvl }}</span>
+            }
+          </div>
+
+          <div class="level-progress">
+            <div class="level-progress-head">
+              <span>Niveau {{ e.currentLevel }}</span>
+              <span class="level-progress-score">{{ e.score }}%</span>
+            </div>
+            <div class="progress-track"><div class="progress-fill" [style.width.%]="e.score"></div></div>
+            <p class="level-req">
+              @if (e.atMaxLevel) {
+                <span class="material-icons">emoji_events</span> Niveau maximum atteint !
+              } @else {
+                Atteignez {{ passThreshold }}% pour passer en <strong>{{ e.nextLevel }}</strong>.
+              }
+            </p>
+          </div>
+
+          <div class="lang-item-actions">
+            <button class="btn btn-primary" (click)="startAssessment(e)" [disabled]="launching() === e.categoryId">
+              @if (launching() === e.categoryId) {
+                Chargement…
+              } @else {
+                <span class="material-icons">play_arrow</span> Passer l'évaluation {{ e.currentLevel }}
+              }
+            </button>
+            <button class="btn btn-ghost" (click)="toggleHistory(e)">
+              <span class="material-icons">history</span>
+              {{ openHistory() === e.categoryId ? 'Masquer' : 'Historique' }}
+            </button>
+          </div>
+
+          @if (openHistory() === e.categoryId) {
+            @if (history(e.categoryId).length === 0) {
+              <p class="history-empty">Aucun évènement pour l'instant.</p>
+            } @else {
+              <ul class="history-list">
+                @for (h of history(e.categoryId); track $index) {
+                  <li class="history-item">
+                    <span class="history-action" [class]="'ha-' + h.action.toLowerCase()">{{ h.action }}</span>
+                    <span class="history-detail">
+                      @if (h.action === 'LEVEL_UP') {
+                        {{ h.fromLevel }} → {{ h.toLevel }}
+                      } @else if (h.action === 'ATTEMPT') {
+                        Niveau {{ h.fromLevel }}
+                      } @else {
+                        Inscription · {{ h.toLevel }}
+                      }
+                      @if (h.score !== null) { · {{ h.score }}% }
+                    </span>
+                    <span class="history-date">{{ h.at | date: 'd MMM y, HH:mm' }}</span>
+                  </li>
+                }
+              </ul>
+            }
+          }
+
+        </section>
+      }
+    </div>
+  }
+
+</div>

@@ -1,0 +1,239 @@
+<div class="report-page">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header class="report-head">
+    <div class="rh-title">
+      <h1>School Activity Report</h1>
+      <p>Executive overview of your language school's performance.</p>
+    </div>
+    <div class="rh-actions">
+      <div class="period-filter" role="tablist" aria-label="Reporting period">
+        @for (p of periods; track p.key) {
+          <button class="period-btn" [class.active]="period() === p.key" (click)="setPeriod(p.key)">{{ p.label }}</button>
+        }
+      </div>
+      <button class="btn-analyze" (click)="analyze()" [disabled]="svc.loading()">
+        <span class="material-icons">auto_awesome</span>
+        {{ svc.loading() ? 'Analyzing…' : 'Analyze' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Empty hero ─────────────────────────────────────────── -->
+  @if (!analyzed()) {
+    <div class="hero-empty">
+      <div class="hero-orb"><span class="material-icons">insights</span></div>
+      <h2>Generate your executive report</h2>
+      <p>Choose a period and run the analysis. We'll turn attendance, exam success, retention and CEFR
+         progression into a board-ready summary — in seconds.</p>
+      <button class="btn-analyze lg" (click)="analyze()">
+        <span class="material-icons">auto_awesome</span> Analyze
+      </button>
+    </div>
+  } @else {
+
+    <!-- ── Section 1 · KPI cards ────────────────────────────── -->
+    @if (svc.loading() && !svc.report()) {
+      <div class="kpi-grid">
+        @for (i of [1,2,3,4,5,6]; track i) { <div class="kpi-card sk-card"><div class="sk"></div></div> }
+      </div>
+    } @else {
+      @if (svc.report(); as r) {
+        <div class="kpi-grid">
+          @for (k of r.kpis; track k.key) {
+            <div class="kpi-card">
+              <span class="kpi-icon"><span class="material-icons">{{ k.icon }}</span></span>
+              <div class="kpi-body">
+                <div class="kpi-value">{{ k.value | number }}<small>{{ k.unit }}</small></div>
+                <div class="kpi-label">{{ k.label }}</div>
+              </div>
+              <span class="kpi-trend" [class.down]="k.trend === 'DOWN'">
+                <span class="material-icons">{{ k.trend === 'DOWN' ? 'trending_down' : 'trending_up' }}</span>{{ k.trendPercent }}%
+              </span>
+            </div>
+          }
+        </div>
+
+        <!-- ── Section 2 · Charts ─────────────────────────────── -->
+        <div class="charts-grid">
+          <div class="card chart-card">
+            <div class="chart-head"><span class="material-icons">show_chart</span><h3>Student Growth</h3></div>
+            <div echarts [options]="studentGrowthOpt()" class="chart"></div>
+          </div>
+          <div class="card chart-card">
+            <div class="chart-head"><span class="material-icons">event_available</span><h3>Attendance Evolution</h3></div>
+            <div echarts [options]="attendanceOpt()" class="chart"></div>
+          </div>
+          <div class="card chart-card">
+            <div class="chart-head"><span class="material-icons">bar_chart</span><h3>Exam Success Rate</h3></div>
+            <div echarts [options]="examSuccessOpt()" class="chart"></div>
+          </div>
+          <div class="card chart-card">
+            <div class="chart-head"><span class="material-icons">donut_large</span><h3>Language Distribution</h3></div>
+            <div echarts [options]="languageDonutOpt()" class="chart"></div>
+          </div>
+        </div>
+
+        <div class="reopen-row">
+          <button class="btn-ghost" (click)="openDrawer()">
+            <span class="material-icons">description</span> View executive report
+          </button>
+        </div>
+      }
+    }
+
+    @if (svc.error() && !drawerOpen()) {
+      <div class="error-banner"><span class="material-icons">error_outline</span> {{ svc.error() }}</div>
+    }
+  }
+</div>
+
+<!-- ── Executive report drawer (slide-in) ───────────────────── -->
+@if (drawerOpen()) {
+  <div class="drawer-backdrop" (click)="closeDrawer()"></div>
+  <aside class="report-drawer" role="dialog" aria-modal="true" aria-label="Executive activity report">
+    <header class="drawer-head">
+      <div class="dh-title">
+        <span class="material-icons">auto_awesome</span>
+        <div><strong>Activity Report</strong><span>AI-assisted analysis</span></div>
+      </div>
+      <div class="dh-actions">
+        @if (svc.report()) {
+          <button class="icon-btn" (click)="print()" title="Print / Save as PDF"><span class="material-icons">print</span></button>
+        }
+        <button class="icon-btn" (click)="closeDrawer()" aria-label="Close"><span class="material-icons">close</span></button>
+      </div>
+    </header>
+
+    <div class="drawer-body">
+      @if (svc.loading()) {
+        <div class="generating">
+          <div class="orb"></div>
+          <p class="gen-title">Generating your executive report…</p>
+          <p class="gen-sub">Analyzing attendance, exam success, retention and CEFR progression.</p>
+          <div class="gen-bars"><span></span><span></span><span></span><span></span></div>
+        </div>
+      } @else {
+        @if (svc.report(); as r) {
+          <article class="paper">
+            <div class="paper-brand">
+              <div class="pb-logo"><span class="material-icons">school</span></div>
+              <div><h2>School Activity Report</h2><p>Executive summary</p></div>
+            </div>
+
+            <div class="paper-meta">
+              <div><span>Generated on</span><strong>{{ r.generatedAt | date:'medium' }}</strong></div>
+              <div><span>Period</span><strong>{{ r.period.label }}</strong></div>
+            </div>
+
+            <div class="health {{ overallClass() }}">
+              <div class="health-ring" [ngStyle]="healthRing()">
+                <div class="health-num">{{ r.overallAssessment.healthScore }}<small>/100</small></div>
+              </div>
+              <div class="health-text">
+                <span class="health-label">School Health Score</span>
+                <strong class="health-status">{{ statusLabel(r.overallAssessment.status) }}</strong>
+                <p>{{ r.overallAssessment.narrative }}</p>
+              </div>
+            </div>
+
+            <section class="sec">
+              <h3>Executive Summary</h3>
+              @for (p of r.executiveSummary; track $index) { <p>{{ p }}</p> }
+            </section>
+
+            <section class="sec">
+              <h3>School Overview</h3>
+              <div class="ov-grid">
+                <div><span>{{ r.schoolOverview.totalStudents | number }}</span>Total Students</div>
+                <div><span>{{ r.schoolOverview.newStudents }}</span>New Students</div>
+                <div><span>{{ r.schoolOverview.activeStudents | number }}</span>Active Students</div>
+                <div><span>{{ r.schoolOverview.attendanceRate }}%</span>Attendance Rate</div>
+                <div><span>{{ r.schoolOverview.examSuccessRate }}%</span>Exam Success</div>
+                <div><span>{{ r.schoolOverview.certificatesDelivered }}</span>Certificates</div>
+              </div>
+            </section>
+
+            <section class="sec">
+              <h3>Language Performance</h3>
+              @for (l of r.languagePerformance; track l.language) {
+                <div class="lang-row">
+                  <div class="lang-name">{{ l.language }}<small>{{ l.students }} students</small></div>
+                  <div class="lang-metrics">
+                    <span>Success <b>{{ l.successRate }}%</b></span>
+                    <span>Attendance <b>{{ l.attendance }}%</b></span>
+                  </div>
+                  <span class="chip {{ statusClass(l.status) }}">{{ statusLabel(l.status) }}</span>
+                </div>
+              }
+            </section>
+
+            <section class="sec">
+              <h3>Teacher Performance</h3>
+              <div class="teacher top">
+                <span class="material-icons">emoji_events</span>
+                <div>
+                  <strong>{{ r.teacherPerformance.top.name }}</strong><small>Top performer</small>
+                  <div class="t-metrics">Success {{ r.teacherPerformance.top.successRate }}% ·
+                    Attendance {{ r.teacherPerformance.top.attendanceRate }}% ·
+                    Satisfaction {{ statusLabel(r.teacherPerformance.top.satisfaction) }}</div>
+                </div>
+              </div>
+              @for (t of r.teacherPerformance.needsSupport; track t.name) {
+                <div class="teacher support">
+                  <span class="material-icons">support_agent</span>
+                  <div>
+                    <strong>{{ t.name }}</strong><small>Needs support</small>
+                    <div class="t-note">{{ t.note }}</div>
+                    <div class="t-reco"><span class="material-icons">tips_and_updates</span>{{ t.recommendation }}</div>
+                  </div>
+                </div>
+              }
+            </section>
+
+            <section class="sec">
+              <h3>Student Retention</h3>
+              <p><strong>{{ r.retention.atRiskCount }} students</strong> show signs of disengagement.</p>
+              <ul class="dots">@for (i of r.retention.indicators; track $index) { <li>{{ i }}</li> }</ul>
+              <div class="t-reco"><span class="material-icons">tips_and_updates</span>{{ r.retention.recommendation }}</div>
+            </section>
+
+            <section class="sec">
+              <h3>CEFR Progression</h3>
+              <div class="cefr">
+                @for (p of r.cefrProgression.promotions; track $index) {
+                  <div class="cefr-pill"><span>{{ p.from }} → {{ p.to }}</span><strong>{{ p.count }}</strong></div>
+                }
+              </div>
+              <p class="trend-note">Overall progression trend is <strong>{{ statusLabel(r.cefrProgression.trend) }}</strong>.</p>
+            </section>
+
+            <section class="sec">
+              <h3>Key Risks</h3>
+              <ol class="num">@for (x of r.risks; track $index) { <li>{{ x }}</li> }</ol>
+            </section>
+
+            <section class="sec">
+              <h3>Recommended Actions</h3>
+              <ol class="num accent">@for (a of r.recommendedActions; track $index) { <li>{{ a }}</li> }</ol>
+            </section>
+
+            <footer class="paper-foot">
+              <span class="material-icons">bolt</span>
+              <div>
+                <strong>Connect your data sources</strong>
+                <p>Link live attendance and assessment feeds to unlock real-time, AI-generated insights.</p>
+              </div>
+            </footer>
+          </article>
+        } @else if (svc.error()) {
+          <div class="generating">
+            <span class="material-icons err">error_outline</span>
+            <p class="gen-title">{{ svc.error() }}</p>
+            <button class="btn-analyze" (click)="analyze()"><span class="material-icons">refresh</span> Retry</button>
+          </div>
+        }
+      }
+    </div>
+  </aside>
+}

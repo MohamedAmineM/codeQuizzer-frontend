@@ -1,0 +1,83 @@
+<div class="page">
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Placement Assessments</h1>
+      <p class="page-subtitle">Review and manage your students' language placements.</p>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span class="stat-icon"><span class="material-icons">groups</span></span>
+      <div><div class="stat-value">{{ stats().total }}</div><div class="stat-label">Students assessed</div></div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon warning"><span class="material-icons">pending_actions</span></span>
+      <div><div class="stat-value">{{ stats().pending }}</div><div class="stat-label">Pending review</div></div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon success"><span class="material-icons">verified</span></span>
+      <div><div class="stat-value">{{ stats().avg }}%</div><div class="stat-label">Avg. confidence</div></div>
+    </div>
+  </div>
+
+  @if (placements().length === 0) {
+    <div class="empty-state">
+      <span class="material-icons">fact_check</span>
+      <h2>No placements yet</h2>
+      <p>When students complete the placement assessment, their profiles will appear here.</p>
+    </div>
+  } @else {
+    <div class="card">
+      <div class="toolbar">
+        <div class="search">
+          <span class="material-icons">search</span>
+          <input type="text" placeholder="Search by name, language or level…"
+                 [ngModel]="search()" (ngModelChange)="search.set($event)" />
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table-pro">
+          <thead>
+            <tr>
+              <th>Student</th><th>Language</th><th>Level</th><th>Confidence</th><th>Assessed</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of visible(); track p.id) {
+              <tr>
+                <td>
+                  <div class="cell-student">
+                    <span class="mini-avatar">{{ p.studentName.charAt(0).toUpperCase() }}</span>
+                    {{ p.studentName }}
+                  </div>
+                </td>
+                <td>{{ p.language }}</td>
+                <td><span class="badge badge-accent lvl">{{ p.finalLevel ?? p.level }}</span></td>
+                <td>
+                  <div class="conf-cell">
+                    <div class="conf-track"><div class="conf-fill" [class]="confClass(p.confidence)" [style.width.%]="p.confidence"></div></div>
+                    <span class="conf-num">{{ p.confidence }}%</span>
+                  </div>
+                </td>
+                <td class="muted">{{ p.completedAt | date:'mediumDate' }}</td>
+                <td>
+                  @if (p.status === 'approved') { <span class="badge badge-success">Approved</span> }
+                  @else if (p.status === 'overridden') { <span class="badge badge-warning">Adjusted</span> }
+                  @else { <span class="badge badge-muted">Pending</span> }
+                </td>
+                <td class="ta-right">
+                  <a class="view-btn" [routerLink]="['/teacher/placements', p.id]" aria-label="View report">
+                    <span class="material-icons">arrow_forward</span>
+                  </a>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</div>

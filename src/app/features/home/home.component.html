@@ -1,0 +1,195 @@
+<div class="home">
+
+  <!-- ════════ HERO ════════ -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-glow hg1"></div>
+    <div class="hero-glow hg2"></div>
+
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="hero-badge">
+          <span class="material-icons">bolt</span>
+          #1 Interactive coding quiz platform
+        </span>
+
+        <h1 class="hero-title">
+          Master Coding Through<br>
+          <span class="hero-gradient">Interactive Learning</span>
+        </h1>
+
+        <p class="hero-sub">
+          Improve your programming skills with interactive quizzes, real-world challenges,
+          instant feedback and personalized learning paths.
+        </p>
+
+        <div class="hero-ctas">
+          <button class="btn-hero-primary" (click)="startLearning()">
+            Start Learning
+            <span class="material-icons">arrow_forward</span>
+          </button>
+          <button class="btn-hero-secondary" (click)="browseCategories()">
+            <span class="material-icons">grid_view</span>
+            Browse Categories
+          </button>
+        </div>
+
+        <div class="hero-proof">
+          <div class="proof-avatars">
+            <span class="proof-avatar a1">S</span>
+            <span class="proof-avatar a2">M</span>
+            <span class="proof-avatar a3">J</span>
+            <span class="proof-avatar a4">+</span>
+          </div>
+          <span class="proof-text">Trusted by <strong>10,000+</strong> developers worldwide</span>
+        </div>
+      </div>
+
+      <!-- Illustration : mockups code + quiz + progression -->
+      <div class="hero-visual" aria-hidden="true">
+        <div class="mock-code-window">
+          <div class="mock-bar"><span></span><span></span><span></span></div>
+          <pre><code><span class="ck">const</span> <span class="cv">skills</span> = <span class="ck">await</span> <span class="cf">practice</span>(<span class="cs">'daily'</span>);
+
+<span class="ck">if</span> (skills.<span class="cv">level</span> === <span class="cs">'expert'</span>) {{ '{' }}
+  <span class="cf">getHired</span>(); <span class="cc">// 🚀</span>
+{{ '}' }}</code></pre>
+        </div>
+
+        <div class="mock-quiz-card">
+          <div class="mq-header">
+            <span class="mq-chip">Angular</span>
+            <span class="mq-timer">⏱ 24s</span>
+          </div>
+          <p class="mq-question">Which hook runs after inputs are initialized?</p>
+          <div class="mq-option correct">ngOnInit() <span>✓</span></div>
+          <div class="mq-option">ngAfterViewInit()</div>
+        </div>
+
+        <div class="mock-progress-card">
+          <span class="mp-label">Weekly progress</span>
+          <div class="mp-bars">
+            <span style="height:35%"></span><span style="height:55%"></span>
+            <span style="height:42%"></span><span style="height:70%"></span>
+            <span style="height:62%"></span><span style="height:88%"></span>
+            <span style="height:100%"></span>
+          </div>
+          <span class="mp-trend">▲ +24% this week</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ FEATURES ════════ -->
+  <section class="section" appReveal>
+    <div class="section-head">
+      <span class="section-tag">Why QuizCodder</span>
+      <h2 class="section-title">Everything you need to level up</h2>
+      <p class="section-sub">A complete toolkit designed for developers who learn by doing.</p>
+    </div>
+
+    <div class="features-grid">
+      @for (f of features; track f.title; let i = $index) {
+        <div class="feature-card" appReveal [revealDelay]="i * 80">
+          <div class="feature-icon"><span class="material-icons">{{ f.icon }}</span></div>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.description }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ════════ STATS ════════ -->
+  <section class="stats-section">
+    <div class="stats-inner">
+      @for (s of stats(); track s.label) {
+        <div class="stat-block">
+          <span class="stat-number">{{ formatStat(s.current) }}{{ s.suffix }}</span>
+          <span class="stat-label">{{ s.label }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ════════ POPULAR CATEGORIES ════════ -->
+  <section class="section" appReveal>
+    <div class="section-head">
+      <span class="section-tag">Popular Categories</span>
+      <h2 class="section-title">Explore trending topics</h2>
+      <p class="section-sub">Pick a technology and start practicing right away.</p>
+    </div>
+
+    <div class="popular-grid">
+      @for (cat of popularCategories; track cat.name; let i = $index) {
+        <button class="popular-card" appReveal [revealDelay]="i * 60"
+                [style.--cat-color]="cat.color"
+                (click)="startLearning()">
+          <span class="popular-icon">{{ cat.icon }}</span>
+          <span class="popular-name">{{ cat.name }}</span>
+          <span class="popular-count">{{ cat.questions }} questions</span>
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- ════════ HOW IT WORKS ════════ -->
+  <section class="section how-section" appReveal>
+    <div class="section-head">
+      <span class="section-tag">How It Works</span>
+      <h2 class="section-title">Start in three simple steps</h2>
+    </div>
+
+    <div class="steps">
+      @for (step of steps; track step.title; let i = $index) {
+        <div class="step" appReveal [revealDelay]="i * 150">
+          <div class="step-number">{{ i + 1 }}</div>
+          <div class="step-icon"><span class="material-icons">{{ step.icon }}</span></div>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.description }}</p>
+          @if (i < steps.length - 1) {
+            <div class="step-connector" aria-hidden="true"></div>
+          }
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ════════ TESTIMONIALS ════════ -->
+  <section class="section" appReveal>
+    <div class="section-head">
+      <span class="section-tag">Testimonials</span>
+      <h2 class="section-title">Loved by developers</h2>
+    </div>
+
+    <div class="testimonials-grid">
+      @for (t of testimonials; track t.name; let i = $index) {
+        <figure class="testimonial-card" appReveal [revealDelay]="i * 120">
+          <div class="t-stars">
+            @for (filled of ratingStars()(t.rating); track $index) {
+              <span class="material-icons" [class.star-on]="filled">star</span>
+            }
+          </div>
+          <blockquote>“{{ t.quote }}”</blockquote>
+          <figcaption>
+            <span class="t-avatar">{{ t.name.charAt(0) }}</span>
+            <div>
+              <span class="t-name">{{ t.name }}</span>
+              <span class="t-role">{{ t.role }}</span>
+            </div>
+          </figcaption>
+        </figure>
+      }
+    </div>
+  </section>
+
+  <!-- ════════ FINAL CTA ════════ -->
+  <section class="final-cta" appReveal>
+    <h2>Ready to level up your coding skills?</h2>
+    <p>Join thousands of developers practicing every day on QuizCodder.</p>
+    <button class="btn-hero-primary" (click)="startLearning()">
+      Start Learning — it's free
+      <span class="material-icons">arrow_forward</span>
+    </button>
+  </section>
+
+</div>

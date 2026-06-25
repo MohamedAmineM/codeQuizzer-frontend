@@ -1,0 +1,225 @@
+<div class="profile-page">
+
+  <!-- Skeleton loading -->
+  @if (loading()) {
+    <div class="profile-card">
+      <div class="skeleton sk-avatar"></div>
+      <div class="skeleton sk-line w-40"></div>
+      <div class="skeleton sk-line w-60"></div>
+      <div class="sk-stats">
+        <div class="skeleton sk-stat"></div>
+        <div class="skeleton sk-stat"></div>
+        <div class="skeleton sk-stat"></div>
+        <div class="skeleton sk-stat"></div>
+      </div>
+    </div>
+  } @else {
+    @let u = auth.user()!;
+
+    <!-- Carte profil -->
+    <div class="profile-card">
+      <div class="profile-banner"></div>
+
+      <div class="profile-avatar">{{ auth.avatarLetter() }}</div>
+
+      <h1 class="profile-name">{{ displayName() }}</h1>
+      <p class="profile-username">&#64;{{ u.username }}</p>
+
+      @if (auth.roleLabel()) {
+        <span class="badge role-badge">
+          <span class="material-icons">verified_user</span>
+          {{ auth.roleLabel() }}
+        </span>
+      }
+
+      <div class="profile-meta">
+        <span class="meta-item">
+          <span class="material-icons">mail</span>
+          {{ u.email }}
+        </span>
+        @if (memberSince()) {
+          <span class="meta-item">
+            <span class="material-icons">calendar_today</span>
+            Membre depuis le {{ memberSince() | date: 'dd/MM/yyyy' }}
+          </span>
+        }
+      </div>
+
+      <button class="btn btn-ghost manage-btn" (click)="manageAccount()">
+        <span class="material-icons">manage_accounts</span>
+        Gérer mon compte
+      </button>
+    </div>
+
+    <!-- Mon profil (identity-service) : affichage + édition -->
+    <section class="details-card">
+      <div class="details-head">
+        <h2 class="details-title">
+          <span class="material-icons">badge</span>
+          Mon profil
+        </h2>
+        @if (!editing()) {
+          <button class="btn btn-ghost btn-sm" (click)="startEdit()">
+            <span class="material-icons">edit</span>
+            Modifier
+          </button>
+        }
+      </div>
+
+      @if (editing()) {
+        <form class="profile-form" (ngSubmit)="save()">
+          <div class="field">
+            <label class="field-label" for="f-name">Nom affiché</label>
+            <input id="f-name" name="displayName" class="field-input" [(ngModel)]="form.displayName" maxlength="160" placeholder="Votre nom" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-lang">Langue maternelle</label>
+            <input id="f-lang" name="nativeLanguage" class="field-input" [(ngModel)]="form.nativeLanguage" maxlength="60" placeholder="ex. Français" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-phone">Téléphone</label>
+            <input id="f-phone" name="phone" class="field-input" [(ngModel)]="form.phone" maxlength="32" placeholder="ex. +216 …" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-avatar">URL de l'avatar</label>
+            <input id="f-avatar" name="avatarUrl" class="field-input" [(ngModel)]="form.avatarUrl" maxlength="500" placeholder="https://…" />
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-bio">Bio</label>
+            <textarea id="f-bio" name="bio" class="field-input" rows="3" [(ngModel)]="form.bio" maxlength="1000" placeholder="Quelques mots sur vous…"></textarea>
+          </div>
+          <div class="form-actions">
+            <button type="button" class="btn btn-ghost" (click)="cancelEdit()">Annuler</button>
+            <button type="submit" class="btn btn-save">
+              <span class="material-icons">save</span>
+              Enregistrer
+            </button>
+          </div>
+        </form>
+      } @else if (profile()) {
+        @let p = profile()!;
+        <ul class="details-list">
+          <li>
+            <span class="material-icons">translate</span>
+            <span class="d-label">Langue maternelle</span>
+            <span class="d-value" [class.muted]="!p.nativeLanguage">{{ p.nativeLanguage || 'Non renseignée' }}</span>
+          </li>
+          <li>
+            <span class="material-icons">call</span>
+            <span class="d-label">Téléphone</span>
+            <span class="d-value" [class.muted]="!p.phone">{{ p.phone || 'Non renseigné' }}</span>
+          </li>
+          @if (p.type === 'STUDENT') {
+            <li>
+              <span class="material-icons">school</span>
+              <span class="d-label">Niveau courant</span>
+              <span class="d-value" [class.muted]="!p.currentLevel">{{ p.currentLevel || '—' }}</span>
+            </li>
+          }
+          <li class="bio-item">
+            <span class="material-icons">notes</span>
+            <span class="d-label">Bio</span>
+            <span class="d-value" [class.muted]="!p.bio">{{ p.bio || 'Aucune bio pour le moment.' }}</span>
+          </li>
+        </ul>
+      } @else {
+        <div class="skeleton sk-line w-60"></div>
+      }
+    </section>
+
+    <!-- Statistiques -->
+    <h2 class="section-title">
+      <span class="material-icons">insights</span>
+      Statistiques
+    </h2>
+
+    @if (results.loading()) {
+      <div class="sk-stats">
+        <div class="skeleton sk-stat"></div>
+        <div class="skeleton sk-stat"></div>
+        <div class="skeleton sk-stat"></div>
+        <div class="skeleton sk-stat"></div>
+      </div>
+    } @else {
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon blue"><span class="material-icons">quiz</span></div>
+        <span class="stat-value">{{ results.stats().quizzesCompleted }}</span>
+        <span class="stat-label">Quiz complétés</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green"><span class="material-icons">check_circle</span></div>
+        <span class="stat-value">{{ results.stats().totalCorrect }}</span>
+        <span class="stat-label">Bonnes réponses</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon cyan"><span class="material-icons">percent</span></div>
+        <span class="stat-value">{{ averageScore() }}%</span>
+        <span class="stat-label">Score moyen</span>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon amber"><span class="material-icons">emoji_events</span></div>
+        <span class="stat-value">{{ results.stats().bestScore }}%</span>
+        <span class="stat-label">Meilleur score</span>
+      </div>
+    </div>
+    }
+
+    <!-- Achievements -->
+    <h2 class="section-title">
+      <span class="material-icons">military_tech</span>
+      Achievements
+      <span class="section-count">{{ unlockedCount() }} / {{ achievements().length }}</span>
+    </h2>
+
+    <div class="achievements-grid">
+      @for (a of achievements(); track a.title) {
+        <div class="achievement" [class.locked]="!a.unlocked">
+          <span class="achievement-icon">
+            <span class="material-icons">{{ a.unlocked ? a.icon : 'lock' }}</span>
+          </span>
+          <span class="achievement-title">{{ a.title }}</span>
+          <span class="achievement-desc">{{ a.description }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Activité récente -->
+    <h2 class="section-title">
+      <span class="material-icons">history</span>
+      Activité récente
+    </h2>
+
+    @if (results.loading()) {
+      <div class="skeleton sk-activity"></div>
+      <div class="skeleton sk-activity"></div>
+    } @else if (recentActivity().length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">rocket_launch</span>
+        <p>Aucun quiz complété pour l'instant.<br>Lancez votre premier quiz pour voir votre activité !</p>
+      </div>
+    } @else {
+      <div class="activity-card">
+        @for (e of recentActivity(); track e.id) {
+          <div class="activity-row">
+            <span class="activity-icon" [class.good]="e.score >= 80">
+              <span class="material-icons">{{ e.score >= 80 ? 'emoji_events' : 'fact_check' }}</span>
+            </span>
+            <div class="activity-main">
+              <span class="activity-title">{{ e.quizTitle }}</span>
+              <span class="activity-sub">{{ e.category }} · {{ e.correctAnswers }}/{{ e.totalQuestions }} bonnes réponses</span>
+            </div>
+            <div class="activity-side">
+              <span class="activity-score">{{ e.score }}%</span>
+              <span class="activity-time">{{ e.completedAt | timeAgo }}</span>
+            </div>
+          </div>
+        }
+        <a class="see-all" routerLink="/results">
+          Voir tous mes résultats <span class="material-icons">arrow_forward</span>
+        </a>
+      </div>
+    }
+  }
+
+</div>

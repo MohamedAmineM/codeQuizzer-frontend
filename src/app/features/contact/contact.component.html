@@ -1,0 +1,119 @@
+<div class="contact-page">
+
+  <!-- Hero -->
+  <section class="contact-hero">
+    <span class="section-tag">Contact</span>
+    <h1>Contact Us</h1>
+    <p>We would love to hear from you.</p>
+  </section>
+
+  <div class="contact-layout">
+
+    <!-- Form card -->
+    <section class="contact-card" appReveal>
+
+      @if (state() === 'success') {
+        <div class="form-banner success" role="status">
+          <span class="material-icons">check_circle</span>
+          Your message has been sent successfully. We'll get back to you within 24 hours.
+        </div>
+      } @else if (state() === 'error') {
+        <div class="form-banner error" role="alert">
+          <span class="material-icons">error</span>
+          Something went wrong while sending your message. Please try again.
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="fullName">Full Name</label>
+            <input id="fullName" type="text" formControlName="fullName"
+                   placeholder="Mohamed Amine Mnassri"
+                   [class.invalid]="invalid('fullName')">
+            @if (invalid('fullName')) {
+              <small class="field-error">Please enter your full name (3+ characters).</small>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input id="email" type="email" formControlName="email"
+                   placeholder="you@example.com"
+                   [class.invalid]="invalid('email')">
+            @if (invalid('email')) {
+              <small class="field-error">Please enter a valid email address.</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="subject">Subject</label>
+          <input id="subject" type="text" formControlName="subject"
+                 placeholder="How can we help?"
+                 [class.invalid]="invalid('subject')">
+          @if (invalid('subject')) {
+            <small class="field-error">Please enter a subject.</small>
+          }
+        </div>
+
+        <div class="form-field">
+          <label for="message">Message</label>
+          <textarea id="message" rows="6" formControlName="message"
+                    placeholder="Tell us more about your request…"
+                    [class.invalid]="invalid('message')"></textarea>
+          @if (invalid('message')) {
+            <small class="field-error">Your message should be at least 10 characters.</small>
+          }
+        </div>
+
+        <button type="submit" class="btn-send" [disabled]="state() === 'loading'">
+          @if (state() === 'loading') {
+            <span class="spinner" aria-hidden="true"></span>
+            Sending…
+          } @else {
+            <span class="material-icons">send</span>
+            Send Message
+          }
+        </button>
+
+      </form>
+    </section>
+
+    <!-- Info sidebar -->
+    <aside class="contact-info" appReveal [revealDelay]="150">
+
+      <div class="info-card">
+        <div class="info-icon"><span class="material-icons">mail</span></div>
+        <div>
+          <span class="info-label">Email</span>
+          <a class="info-value" href="mailto:admin@quizcodder.com">admin&#64;quizcodder.com</a>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon"><span class="material-icons">schedule</span></div>
+        <div>
+          <span class="info-label">Response Time</span>
+          <span class="info-value">Within 24 hours</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-icon"><span class="material-icons">public</span></div>
+        <div>
+          <span class="info-label">Location</span>
+          <span class="info-value">Remote</span>
+        </div>
+      </div>
+
+      <div class="info-note">
+        <span class="material-icons">support_agent</span>
+        <p>Our team usually replies the same day. For quiz content issues, include the category and question.</p>
+      </div>
+
+    </aside>
+
+  </div>
+</div>

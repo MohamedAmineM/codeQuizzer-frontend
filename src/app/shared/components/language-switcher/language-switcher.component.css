@@ -1,0 +1,143 @@
+/* ════════════════════════════════════════════════════════════════
+   LANGUAGE SWITCHER — pilule navbar + menu glassmorphism
+   Aligné sur les tokens du design system (clair / sombre).
+   ════════════════════════════════════════════════════════════════ */
+.lang-switcher { position: relative; display: inline-flex; }
+
+/* ── Pilule déclencheur (🌐 EN ▾) ───────────────────────────────── */
+.lang-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 10px 0 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  transition: all var(--transition);
+}
+.lang-trigger .globe { font-size: 19px; }
+.lang-trigger .lang-code { line-height: 1; }
+.lang-trigger .chev {
+  font-size: 18px;
+  margin-left: -2px;
+  color: var(--text-light);
+  transition: transform var(--transition);
+}
+.lang-trigger:hover {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-light);
+  transform: translateY(-1px);
+}
+.lang-trigger.open {
+  color: var(--primary);
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+.lang-trigger.open .chev { transform: rotate(180deg); }
+
+/* ── Menu flottant ──────────────────────────────────────────────── */
+.lang-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 204px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transform-origin: top right;
+  animation: langMenuIn 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1200;
+  outline: none;
+}
+@keyframes langMenuIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Option de langue ───────────────────────────────────────────── */
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--transition), transform var(--transition);
+}
+.lang-option .flag {
+  width: 24px;
+  height: 16px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: block;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+.lang-option .flag :where(svg) { display: block; width: 100%; height: 100%; }
+.lang-name { flex: 1; white-space: nowrap; }
+.lang-option .check {
+  font-size: 18px;
+  color: var(--primary);
+  animation: scaleIn 0.18s ease;
+}
+
+/* Survol / focus clavier : fond neutre doux */
+.lang-option:hover,
+.lang-option.focused { background: var(--bg); }
+
+/* Langue active : fond accentué + texte accent (badge coché) */
+.lang-option.active,
+.lang-option.active:hover,
+.lang-option.active.focused {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.lang-option.active .lang-name { font-weight: 700; }
+
+/* Effet « scale » à la sélection */
+.lang-option:active { transform: scale(0.98); }
+
+/* ── Mobile : pilule réduite au globe seul (🌐) ─────────────────── */
+@media (max-width: 600px) {
+  .lang-trigger {
+    width: 40px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+  }
+  .lang-trigger .lang-code,
+  .lang-trigger .chev { display: none; }
+  .lang-menu { min-width: 200px; }
+}
+
+/* ── RTL : le menu s'ouvre du côté opposé ───────────────────────── */
+.lang-switcher.rtl .lang-menu {
+  right: auto;
+  left: 0;
+  transform-origin: top left;
+}
+
+/* ── Préférence « mouvement réduit » ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .lang-menu,
+  .lang-option .check { animation: none; }
+  .lang-trigger,
+  .lang-trigger .chev,
+  .lang-option { transition: none; }
+}

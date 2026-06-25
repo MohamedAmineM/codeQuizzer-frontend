@@ -1,0 +1,225 @@
+/* ════════════════════════════════════════════════════════════════
+   SIDEBAR — coulissante (300ms), réductible (280 ↔ 80px)
+   ════════════════════════════════════════════════════════════════ */
+
+:host { display: contents; }
+
+.sidebar {
+  position: fixed;
+  top: var(--navbar-h);
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  z-index: 1090;
+  transform: translateX(-100%);
+  transition: transform var(--sidebar-anim), width var(--sidebar-anim);
+  will-change: transform, width;
+}
+.sidebar.open { transform: translateX(0); }
+.sidebar.collapsed { width: var(--sidebar-w-collapsed); }
+
+/* Mode compact : tiroir plein écran avec ombre portée */
+.sidebar.compact {
+  top: var(--navbar-h);
+  width: min(300px, 86vw);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Backdrop (compact) */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  top: var(--navbar-h);
+  z-index: 1085;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.2s ease;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  padding: 0 var(--space-4);
+  flex-shrink: 0;
+}
+.sidebar-head-title {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-light);
+}
+.collapsed .sidebar-head { justify-content: center; padding: 0; }
+.collapsed .sidebar-head-title { display: none; }
+
+.rail-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-muted);
+  transition: all var(--transition);
+}
+.rail-btn .material-icons { font-size: 20px; }
+.rail-btn:hover { background: var(--primary-light); color: var(--primary); }
+
+/* ── Nav (scroll) ───────────────────────────────────────────────── */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-2) var(--space-3) var(--space-4);
+}
+.sidebar-nav::-webkit-scrollbar { width: 6px; }
+
+.nav-section { margin-bottom: var(--space-4); }
+.section-title {
+  display: block;
+  padding: 8px 12px 6px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-light);
+}
+.collapsed .section-title {
+  height: 1px;
+  padding: 0;
+  margin: 10px 12px;
+  overflow: hidden;
+  color: transparent;
+  background: var(--border);
+}
+
+/* ── Nav items ──────────────────────────────────────────────────── */
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  margin: 2px 0;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+}
+.nav-item:hover {
+  background: var(--bg);
+  color: var(--text);
+  transform: translateX(2px);
+}
+.nav-item.active {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* Barre d'accent dégradée (item actif) */
+.active-bar {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%) scaleY(0);
+  width: 4px;
+  height: 62%;
+  border-radius: 0 4px 4px 0;
+  background: var(--gradient-brand);
+  transition: transform var(--transition);
+}
+.nav-item.active .active-bar { transform: translateY(-50%) scaleY(1); }
+
+.nav-item-icon {
+  position: relative;
+  width: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.nav-item-icon .material-icons { font-size: 21px; }
+
+/* Pastille (badge réduit) sur l'icône en mode collapsed */
+.icon-dot {
+  position: absolute;
+  top: -2px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 2px solid var(--surface);
+  display: none;
+}
+.collapsed .icon-dot { display: block; }
+
+.nav-item-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-item-badge {
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  background: var(--danger);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* États réduits */
+.collapsed .nav-item { justify-content: center; padding: 11px 0; gap: 0; }
+.collapsed .nav-item-label,
+.collapsed .nav-item-badge { display: none; }
+
+/* ── Footer (mini profil) ───────────────────────────────────────── */
+.sidebar-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.foot-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--gradient-brand);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.foot-id { display: flex; flex-direction: column; min-width: 0; }
+.foot-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.foot-role { font-size: 12px; color: var(--text-muted); }
+.collapsed .sidebar-foot { justify-content: center; padding: var(--space-3) 0; }
+.collapsed .foot-id { display: none; }

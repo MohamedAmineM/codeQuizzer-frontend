@@ -1,0 +1,120 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Admin Dashboard</h1>
+      <p class="page-subtitle">Vue d'ensemble de la plateforme.</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/admin/users">
+      <span class="material-icons">group</span>
+      Gérer les utilisateurs
+    </a>
+  </div>
+
+  <!-- KPIs -->
+  @if (admin.loading()) {
+    <div class="stat-grid">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="stat-card"><div class="skeleton sk-stat"></div></div>
+      }
+    </div>
+  } @else {
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-icons">group</span></span>
+        <div>
+          <div class="stat-value">{{ admin.stats().usersCount }}</div>
+          <div class="stat-label">Users</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon accent"><span class="material-icons">school</span></span>
+        <div>
+          <div class="stat-value">{{ admin.stats().teachersCount }}</div>
+          <div class="stat-label">Teachers</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon success"><span class="material-icons">backpack</span></span>
+        <div>
+          <div class="stat-value">{{ admin.stats().studentsCount }}</div>
+          <div class="stat-label">Students</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-icons">quiz</span></span>
+        <div>
+          <div class="stat-value">{{ admin.stats().quizzesCount }}</div>
+          <div class="stat-label">Quizzes</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon warning"><span class="material-icons">category</span></span>
+        <div>
+          <div class="stat-value">{{ admin.stats().categoriesCount }}</div>
+          <div class="stat-label">Categories</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon danger"><span class="material-icons">notifications</span></span>
+        <div>
+          <div class="stat-value">{{ admin.stats().notificationsCount }}</div>
+          <div class="stat-label">Notifications</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="dash-grid">
+
+    <!-- System health -->
+    <section class="card">
+      <h2 class="card-title"><span class="material-icons">monitor_heart</span> System Health</h2>
+      @if (admin.loading()) {
+        @for (i of [1, 2, 3, 4]; track i) { <div class="skeleton sk-row"></div> }
+      } @else {
+        <ul class="health-list">
+          @for (h of admin.health(); track h.service) {
+            <li class="health-row">
+              <span class="health-dot" [class]="'health-dot ' + healthMeta[h.status].cssClass"></span>
+              <span class="health-service">{{ h.service }}</span>
+              <span class="health-latency">{{ h.latencyMs }} ms</span>
+              <span class="health-status" [class]="'health-status ' + healthMeta[h.status].cssClass">
+                {{ healthMeta[h.status].label }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- Recent activities -->
+    <section class="card">
+      <h2 class="card-title"><span class="material-icons">timeline</span> Recent Activities</h2>
+      @if (admin.loading()) {
+        @for (i of [1, 2, 3, 4]; track i) { <div class="skeleton sk-row"></div> }
+      } @else if (admin.activities().length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">hourglass_empty</span>
+          <p>Aucune activité récente.</p>
+        </div>
+      } @else {
+        <ul class="activity-list">
+          @for (a of admin.activities(); track a.id) {
+            <li class="activity-row">
+              <span class="activity-icon">
+                <span class="material-icons">{{ a.icon }}</span>
+              </span>
+              <div class="activity-main">
+                <span class="activity-label">{{ a.label }}</span>
+                <span class="activity-detail">{{ a.detail }}</span>
+              </div>
+              <span class="activity-time">{{ a.timestamp | timeAgo }}</span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+  </div>
+</div>

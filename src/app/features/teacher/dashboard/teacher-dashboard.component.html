@@ -1,0 +1,109 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Teacher Dashboard</h1>
+      <p class="page-subtitle">Vue d'ensemble de vos quiz et de votre audience.</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/teacher/quizzes">
+      <span class="material-icons">library_books</span>
+      Gérer mes quiz
+    </a>
+  </div>
+
+  <!-- KPIs -->
+  @if (teacher.loading()) {
+    <div class="stat-grid">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="stat-card"><div class="skeleton sk-stat"></div></div>
+      }
+    </div>
+  } @else {
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-icons">quiz</span></span>
+        <div>
+          <div class="stat-value">{{ teacher.stats().totalQuizzes }}</div>
+          <div class="stat-label">Total Quizzes</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon accent"><span class="material-icons">category</span></span>
+        <div>
+          <div class="stat-value">{{ teacher.stats().totalCategories }}</div>
+          <div class="stat-label">Total Categories</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon success"><span class="material-icons">groups</span></span>
+        <div>
+          <div class="stat-value">{{ teacher.stats().studentsReached ?? '—' }}</div>
+          <div class="stat-label">Students Reached</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="dash-grid">
+
+    <!-- Quiz récents -->
+    <section class="card">
+      <h2 class="card-title"><span class="material-icons">history_edu</span> Quiz récents</h2>
+      @if (teacher.loading()) {
+        @for (i of [1, 2, 3]; track i) { <div class="skeleton sk-row"></div> }
+      } @else if (recentQuizzes().length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">post_add</span>
+          <p>Aucun quiz pour l'instant. Importez votre premier quiz !</p>
+        </div>
+      } @else {
+        <ul class="recent-list">
+          @for (q of recentQuizzes(); track q.id) {
+            <li class="recent-item">
+              <div class="recent-main">
+                <span class="recent-title">{{ q.title }}</span>
+                <span class="recent-sub">{{ q.category }} · {{ q.questionsCount }} questions · {{ q.createdAt | date: 'd MMM y' }}</span>
+              </div>
+              <span class="badge" [class]="'badge ' + statusMeta[q.status].cssClass">{{ statusMeta[q.status].label }}</span>
+            </li>
+          }
+        </ul>
+        <a class="see-all" routerLink="/teacher/quizzes">
+          Voir tous les quiz <span class="material-icons">arrow_forward</span>
+        </a>
+      }
+    </section>
+
+    <!-- Notifications récentes -->
+    <section class="card">
+      <h2 class="card-title"><span class="material-icons">notifications</span> Notifications récentes</h2>
+      @if (notifications.loading()) {
+        @for (i of [1, 2, 3]; track i) { <div class="skeleton sk-row"></div> }
+      } @else if (recentNotifications().length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">notifications_off</span>
+          <p>Aucune notification.</p>
+        </div>
+      } @else {
+        <ul class="recent-list">
+          @for (n of recentNotifications(); track n.id) {
+            <li class="recent-item">
+              <span class="recent-icon" [style.color]="typeMeta[n.type].color">
+                <span class="material-icons">{{ typeMeta[n.type].icon }}</span>
+              </span>
+              <div class="recent-main">
+                <span class="recent-title">{{ n.title }}</span>
+                <span class="recent-sub">{{ n.createdAt | timeAgo }}</span>
+              </div>
+              @if (!n.read) { <span class="unread-dot"></span> }
+            </li>
+          }
+        </ul>
+        <a class="see-all" routerLink="/notifications">
+          Toutes les notifications <span class="material-icons">arrow_forward</span>
+        </a>
+      }
+    </section>
+
+  </div>
+</div>

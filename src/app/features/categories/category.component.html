@@ -1,0 +1,96 @@
+<div class="home-wrapper">
+
+  <!-- Hero -->
+  <section class="hero">
+    <span class="hero-badge">
+      <span class="material-icons">bolt</span>
+      Plateforme de quiz pour développeurs
+    </span>
+    <h1 class="hero-title">Testez vos connaissances<br><span class="hero-gradient">comme un pro</span></h1>
+    <p class="hero-sub">Choisissez une catégorie et répondez à une série de questions pour mesurer votre niveau en développement.</p>
+  </section>
+
+  <!-- Category grid -->
+  <section class="categories-section">
+    <h2 class="section-title">
+      <span class="material-icons">category</span>
+      Choisir une catégorie
+    </h2>
+
+    <!-- Skeletons pendant le chargement du catalogue (Quiz Service) -->
+    @if (quiz.categoriesLoading()) {
+      <div class="categories-grid">
+        @for (i of [1, 2, 3, 4, 5]; track i) {
+          <div class="skeleton" style="height: 180px; border-radius: var(--radius-lg);"></div>
+        }
+      </div>
+    } @else if (quiz.categories().length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">cloud_off</span>
+        <h3>Catalogue indisponible</h3>
+        <p>Impossible de charger les catégories. Vérifiez que le backend est démarré.</p>
+        <button class="start-btn" (click)="quiz.loadCategories()">Réessayer</button>
+      </div>
+    } @else {
+    <div class="categories-grid">
+      @for (cat of quiz.categories(); track cat.name; let i = $index) {
+        <button
+          class="cat-card"
+          [class.selected]="quiz.selectedCategory() === cat.name"
+          [style.--cat-color]="cat.color"
+          [style.animation-delay.ms]="i * 60"
+          (click)="selectCategory(cat.name)">
+
+          <div class="cat-top">
+            <span class="cat-icon">{{ cat.icon }}</span>
+            <span class="difficulty-badge"
+                  [class.beginner]="cat.difficulty === 'Débutant'"
+                  [class.intermediate]="cat.difficulty === 'Intermédiaire'"
+                  [class.advanced]="cat.difficulty === 'Avancé'">
+              {{ cat.difficulty }}
+            </span>
+          </div>
+
+          <span class="cat-name">{{ cat.name }}</span>
+          <span class="cat-desc">{{ cat.description }}</span>
+
+          <div class="cat-footer">
+            <span class="cat-count">
+              <span class="material-icons">help_outline</span>
+              {{ cat.questionCount }} questions
+            </span>
+            @if (quiz.selectedCategory() === cat.name) {
+              <span class="selected-check"><span class="material-icons">check</span></span>
+            }
+          </div>
+        </button>
+      }
+    </div>
+    }
+  </section>
+
+  <!-- Start bar : visible après sélection d'une catégorie -->
+  @if (quiz.selectedCategory()) {
+    <div class="start-bar">
+      <div class="start-info">
+        <span class="material-icons">playlist_add_check</span>
+        <div>
+          <strong>{{ quiz.selectedCategory() }}</strong>
+          <span class="start-detail">
+            @if (quiz.questionsLoading()) {
+              Chargement des questions…
+            } @else {
+              {{ getQuestionCount() }} questions · 30s par question
+            }
+          </span>
+        </div>
+      </div>
+      <button class="start-btn" (click)="startQuiz()"
+              [disabled]="quiz.questionsLoading() || quiz.currentQuestions().length === 0">
+        Commencer le quiz
+        <span class="material-icons">arrow_forward</span>
+      </button>
+    </div>
+  }
+
+</div>

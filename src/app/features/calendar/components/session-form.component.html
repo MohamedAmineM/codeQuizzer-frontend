@@ -1,0 +1,124 @@
+<div class="modal-overlay" (click)="close.emit()">
+  <div class="modal sf" (click)="$event.stopPropagation()">
+    <div class="sf-head">
+      <h2 class="sf-title">{{ isEdit ? 'Edit session' : 'New session' }}</h2>
+      <button class="sf-x" (click)="close.emit()" aria-label="Close"><span class="material-icons">close</span></button>
+    </div>
+
+    <div class="sf-body">
+      <!-- Title -->
+      <label class="fld">
+        <span class="fld-label">Title</span>
+        <input class="input" type="text" [(ngModel)]="form.title" placeholder="e.g. English B1 — Grammar focus" />
+      </label>
+
+      <div class="fld-row">
+        <label class="fld">
+          <span class="fld-label">Language</span>
+          <select class="input" [(ngModel)]="form.language">
+            @for (l of languages; track l) { <option [value]="l">{{ l }}</option> }
+          </select>
+        </label>
+        <label class="fld">
+          <span class="fld-label">Level</span>
+          <select class="input" [(ngModel)]="form.level">
+            @for (l of levels; track l) { <option [value]="l">{{ l }}</option> }
+          </select>
+        </label>
+      </div>
+
+      @if (canPickTeacher()) {
+        <label class="fld">
+          <span class="fld-label">Teacher</span>
+          <select class="input" [(ngModel)]="form.teacherId">
+            @for (t of teachers; track t.id) { <option [value]="t.id">{{ t.name }}</option> }
+          </select>
+        </label>
+      }
+
+      <!-- Schedule -->
+      <div class="fld-row three">
+        <label class="fld"><span class="fld-label">Date</span><input class="input" type="date" [(ngModel)]="form.date" /></label>
+        <label class="fld"><span class="fld-label">Start</span><input class="input" type="time" [(ngModel)]="form.start" /></label>
+        <label class="fld"><span class="fld-label">End</span><input class="input" type="time" [(ngModel)]="form.end" /></label>
+      </div>
+
+      <!-- Type -->
+      <div class="fld">
+        <span class="fld-label">Session type</span>
+        <div class="seg">
+          @for (t of types; track t) {
+            <button class="seg-btn" [class.on]="form.type === t" (click)="form.type = t">
+              {{ t === 'in-person' ? 'In-Person' : (t === 'online' ? 'Online' : 'Hybrid') }}
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (showLocation) {
+        <label class="fld"><span class="fld-label">Location (classroom)</span>
+          <input class="input" type="text" [(ngModel)]="form.location" placeholder="Classroom A" /></label>
+      }
+      @if (showLink) {
+        <div class="fld-row">
+          <label class="fld"><span class="fld-label">Provider</span>
+            <select class="input" [(ngModel)]="form.meetingProvider">
+              @for (p of providers; track p) { <option [value]="p">{{ p === 'meet' ? 'Google Meet' : (p === 'zoom' ? 'Zoom' : 'Microsoft Teams') }}</option> }
+            </select>
+          </label>
+          <label class="fld"><span class="fld-label">Meeting link</span>
+            <input class="input" type="url" [(ngModel)]="form.meetingLink" placeholder="https://…" /></label>
+        </div>
+      }
+
+      <!-- Details -->
+      <label class="fld"><span class="fld-label">Description</span>
+        <textarea class="input" rows="2" [(ngModel)]="form.description" placeholder="Optional notes for students…"></textarea></label>
+
+      <div class="fld-row">
+        <label class="fld"><span class="fld-label">Max students</span>
+          <input class="input" type="number" min="1" [(ngModel)]="form.maxStudents" /></label>
+        <label class="fld"><span class="fld-label">Status</span>
+          <select class="input" [(ngModel)]="form.status">
+            @for (st of statuses; track st) { <option [value]="st">{{ st | titlecase }}</option> }
+          </select>
+        </label>
+      </div>
+
+      <!-- Recurrence (create only) -->
+      @if (!isEdit) {
+        <div class="rec">
+          <label class="rec-toggle">
+            <input type="checkbox" [(ngModel)]="form.recurrence.enabled" />
+            <span class="fld-label">Repeat weekly</span>
+          </label>
+          @if (form.recurrence.enabled) {
+            <div class="rec-body">
+              <div class="rec-days">
+                @for (d of weekdays; track $index) {
+                  <button class="rec-day" [class.on]="form.recurrence.days.includes($index)" (click)="toggleDay($index)">{{ d.charAt(0) }}</button>
+                }
+              </div>
+              <label class="fld rec-weeks">
+                <span class="fld-label">Duration</span>
+                <select class="input" [(ngModel)]="form.recurrence.weeks">
+                  <option [ngValue]="4">1 month</option>
+                  <option [ngValue]="8">2 months</option>
+                  <option [ngValue]="12">3 months</option>
+                </select>
+              </label>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="sf-actions">
+      <button class="btn btn-ghost" (click)="close.emit()">Cancel</button>
+      <button class="btn btn-primary" (click)="save()">
+        <span class="material-icons">{{ isEdit ? 'save' : 'add' }}</span>
+        {{ isEdit ? 'Save changes' : 'Create session' }}
+      </button>
+    </div>
+  </div>
+</div>

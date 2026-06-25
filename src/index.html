@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>CodeQuizzer — Testez vos connaissances</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script>
+    // Applique le thème avant le rendu pour éviter le flash (FOUC).
+    (function () {
+      try {
+        var t = localStorage.getItem('cq-theme');
+        if (t !== 'light' && t !== 'dark') {
+          t = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (e) {}
+    })();
+
+    // Applique la langue + le sens d'écriture avant le rendu (évite le flash LTR/RTL).
+    (function () {
+      try {
+        var dirs = { en: 'ltr', fr: 'ltr', ar: 'rtl' };
+        var l = localStorage.getItem('preferredLanguage');
+        if (!dirs[l]) {
+          var nav = (navigator.language || 'en').slice(0, 2).toLowerCase();
+          l = dirs[nav] ? nav : 'en';
+        }
+        document.documentElement.setAttribute('lang', l);
+        document.documentElement.setAttribute('dir', dirs[l]);
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

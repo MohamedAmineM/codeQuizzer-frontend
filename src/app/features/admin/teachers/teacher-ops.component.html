@@ -1,0 +1,287 @@
+<div class="ops">
+
+  <!-- ═══════════ HEADER ═══════════ -->
+  <header class="ops-head">
+    <div class="head-text">
+      <h1 class="ops-title">👨‍🏫 Teacher Operations Center</h1>
+      <p class="ops-sub">Manage teachers, assignments, schedules and performance from one place.</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn btn-ghost" (click)="exportReport()" [disabled]="svc.loading()">
+        <span class="material-icons">download</span> Export Report
+      </button>
+      <button class="btn btn-primary" (click)="addTeacher()">
+        <span class="material-icons">person_add</span> Add Teacher
+      </button>
+    </div>
+  </header>
+
+  @if (svc.loading()) {
+    <div class="kpi-grid">
+      @for (i of [1,2,3,4,5,6]; track i) { <div class="kpi-card glass skeleton sk-kpi"></div> }
+    </div>
+    <div class="card"> @for (i of [1,2,3,4,5]; track i) { <div class="skeleton sk-row"></div> } </div>
+  } @else if (svc.error()) {
+    <div class="card empty-state">
+      <span class="material-icons">cloud_off</span>
+      <h3>Impossible de charger les enseignants</h3>
+      <p>Vérifiez votre connexion ou vos droits, puis réessayez.</p>
+      <button class="btn btn-primary" (click)="svc.load()">Réessayer</button>
+    </div>
+  } @else if (svc.teachers().length === 0) {
+    <div class="card empty-state">
+      <span class="material-icons">school</span>
+      <h3>Aucun enseignant</h3>
+      <p>Créez un compte enseignant pour démarrer.</p>
+      <button class="btn btn-primary" (click)="addTeacher()"><span class="material-icons">person_add</span> Add Teacher</button>
+    </div>
+  } @else {
+
+    <!-- ═══════════ SECTION 1 — EXECUTIVE OVERVIEW ═══════════ -->
+    <div class="kpi-grid">
+      @for (k of svc.kpis(); track k.key; let i = $index) {
+        <div class="kpi-card glass">
+          <div class="kpi-top">
+            <span class="kpi-ico" [style.background]="k.color + '1f'" [style.color]="k.color">{{ k.icon }}</span>
+            <span class="kpi-trend" [class.up]="k.trend >= 0">
+              <span class="material-icons">{{ k.trend >= 0 ? 'trending_up' : 'trending_down' }}</span>{{ k.trend }}%
+            </span>
+          </div>
+          <div class="kpi-value">{{ k.value }}</div>
+          <div class="kpi-label">{{ k.label }}</div>
+          <div echarts [options]="kpiCharts()[i]" class="kpi-spark"></div>
+        </div>
+      }
+    </div>
+
+    <!-- ═══════════ SECTION 2 — TEACHER DIRECTORY ═══════════ -->
+    <section class="card glass dir-card">
+      <div class="block-head">
+        <h2 class="block-title"><span class="material-icons">groups</span> Teacher Directory</h2>
+        <div class="dir-tools">
+          <div class="search-box">
+            <span class="material-icons">search</span>
+            <input type="text" placeholder="Search name, email or language…" [value]="search()" (input)="onSearch($event)" />
+          </div>
+          <select class="mini-select" [value]="langFilter()" (change)="setLang($any($event.target).value)">
+            <option value="ALL">All languages</option>
+            @for (l of languages(); track l) { <option [value]="l">{{ l }}</option> }
+          </select>
+        </div>
+      </div>
+
+      <div class="chip-row">
+        @for (f of statusFilters; track f.value) {
+          <button class="filter-chip" [class.active]="statusFilter() === f.value" (click)="setStatus(f.value)">{{ f.label }}</button>
+        }
+      </div>
+
+      <div class="table-wrap">
+        <table class="table-pro dir-table">
+          <thead>
+            <tr>
+              <th>Teacher</th><th>Languages</th><th>CEFR</th><th>Students</th>
+              <th>Hours</th><th>Attendance</th><th>Status</th><th class="th-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (t of filtered(); track t.id) {
+              <tr [class.active]="selected()?.id === t.id" (click)="select(t)">
+                <td>
+                  <div class="t-cell">
+                    <span class="avatar" [class.off]="t.status !== 'ACTIVE'">{{ t.initials }}</span>
+                    <div class="t-meta"><span class="t-name">{{ t.name }}</span><span class="t-mail">{{ t.email }}</span></div>
+                  </div>
+                </td>
+                <td>
+                  <div class="lang-tags">
+                    @for (l of t.languages.slice(0, 2); track l) { <span class="tag">{{ l }}</span> }
+                    @if (t.languages.length > 2) { <span class="tag more">+{{ t.languages.length - 2 }}</span> }
+                    @if (t.languages.length === 0) { <span class="cell-muted">—</span> }
+                  </div>
+                </td>
+                <td><span class="cell-muted">{{ t.levels.join(' · ') || '—' }}</span></td>
+                <td><strong>{{ t.assignedStudents }}</strong></td>
+                <td class="cell-muted">{{ t.teachingHours }}h</td>
+                <td>
+                  <div class="bar-mini"><span [style.width.%]="t.attendanceRate" [class]="'fill ' + capacityClass(t.attendanceRate >= 90 ? 50 : 80)"></span></div>
+                  <span class="bar-val">{{ t.attendanceRate }}%</span>
+                </td>
+                <td><span class="status-pill" [class]="statusMeta[t.status].cls">{{ statusMeta[t.status].dot }} {{ statusMeta[t.status].label }}</span></td>
+                <td class="td-actions" (click)="$event.stopPropagation()">
+                  <button class="icon-btn" title="View profile" (click)="select(t)"><span class="material-icons">visibility</span></button>
+                  <button class="icon-btn" title="Edit (User Management)" (click)="addTeacher()"><span class="material-icons">edit</span></button>
+                  <button class="icon-btn" title="Assignments (Category Management)" (click)="goToAssignments()"><span class="material-icons">menu_book</span></button>
+                  <button class="icon-btn" title="Permissions" (click)="select(t)"><span class="material-icons">shield</span></button>
+                  <button class="icon-btn" title="Performance" (click)="select(t)"><span class="material-icons">insights</span></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    @if (selected(); as t) {
+      <!-- Spotlight bar -->
+      <div class="spotlight glass">
+        <span class="avatar lg" [class.off]="t.status !== 'ACTIVE'">{{ t.initials }}</span>
+        <div class="sp-id">
+          <div class="sp-name">{{ t.name }}
+            <span class="status-pill" [class]="statusMeta[t.status].cls">{{ statusMeta[t.status].dot }} {{ statusMeta[t.status].label }}</span>
+            @if (!t.realData) { <span class="demo-tag" title="Métriques de démonstration jusqu'à branchement backend">demo data</span> }
+          </div>
+          <div class="sp-mail">{{ t.email }} · Rank #{{ t.rank }}</div>
+        </div>
+        <div class="sp-quick">
+          <div class="q"><span class="q-v">{{ t.assignedStudents }}</span><span class="q-l">Students</span></div>
+          <div class="q"><span class="q-v">{{ t.teachingHours }}h</span><span class="q-l">This month</span></div>
+          <div class="q"><span class="q-v">{{ t.successRate }}%</span><span class="q-l">Success</span></div>
+          <div class="q"><span class="q-v">{{ t.attendanceRate }}%</span><span class="q-l">Attendance</span></div>
+        </div>
+      </div>
+
+      <div class="detail-grid">
+        <!-- ══════ MAIN COLUMN ══════ -->
+        <div class="col-main">
+
+          <!-- SECTION 3 — ASSIGNMENTS -->
+          <section class="card glass">
+            <div class="block-head">
+              <h2 class="block-title"><span class="material-icons">assignment_ind</span> Assignments</h2>
+              <button class="btn btn-ghost btn-sm" (click)="goToAssignments()"><span class="material-icons">edit</span> Manage</button>
+            </div>
+            <div class="assign-grid">
+              <div>
+                <h4 class="mini-label">Languages</h4>
+                <div class="check-list">
+                  @for (l of languages(); track l) {
+                    <span class="check-item" [class.on]="hasLanguage(t, l)">
+                      <span class="material-icons">{{ hasLanguage(t, l) ? 'check_box' : 'check_box_outline_blank' }}</span>{{ l }}
+                    </span>
+                  }
+                </div>
+              </div>
+              <div>
+                <h4 class="mini-label">CEFR Levels</h4>
+                <div class="check-list">
+                  @for (lv of cefrLevels; track lv) {
+                    <span class="check-item" [class.on]="hasLevel(t, lv)">
+                      <span class="material-icons">{{ hasLevel(t, lv) ? 'check_box' : 'check_box_outline_blank' }}</span>{{ lv }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+            <div class="capacity">
+              <div class="cap-head">
+                <span class="mini-label">Current Capacity</span>
+                <span class="cap-val">{{ t.assignedStudents }} / {{ t.capacity }} students · <strong [class]="capacityClass(t.utilization)">{{ t.utilization }}%</strong> utilization</span>
+              </div>
+              <div class="bar-lg"><span class="fill" [class]="capacityClass(t.utilization)" [style.width.%]="t.utilization"></span></div>
+            </div>
+          </section>
+
+          <!-- SECTION 4 — PERFORMANCE -->
+          <section class="card glass">
+            <div class="block-head"><h2 class="block-title"><span class="material-icons">monitoring</span> Performance Dashboard</h2></div>
+            <div class="metric-row">
+              <div class="metric"><span class="m-ico ok"><span class="material-icons">event_available</span></span><div><div class="m-v">{{ t.attendanceRate }}%</div><div class="m-l">Attendance</div></div></div>
+              <div class="metric"><span class="m-ico pri"><span class="material-icons">military_tech</span></span><div><div class="m-v">{{ t.successRate }}%</div><div class="m-l">Student Success</div></div></div>
+              <div class="metric"><span class="m-ico acc"><span class="material-icons">grade</span></span><div><div class="m-v">{{ t.avgScore }}%</div><div class="m-l">Avg Score</div></div></div>
+              <div class="metric"><span class="m-ico warn"><span class="material-icons">workspace_premium</span></span><div><div class="m-v">{{ t.certificates }}</div><div class="m-l">Certificates</div></div></div>
+              <div class="metric"><span class="m-ico sec"><span class="material-icons">cast_for_education</span></span><div><div class="m-v">{{ t.sessions }}</div><div class="m-l">Sessions</div></div></div>
+            </div>
+            <div class="chart-grid">
+              <div class="chart-box"><h4 class="mini-label">Student Progress Trend</h4><div echarts [options]="progressOpt()" class="chart"></div></div>
+              <div class="chart-box"><h4 class="mini-label">Attendance Trend</h4><div echarts [options]="attendanceOpt()" class="chart"></div></div>
+              <div class="chart-box"><h4 class="mini-label">Exam Success Rate</h4><div echarts [options]="examOpt()" class="chart"></div></div>
+              <div class="chart-box"><h4 class="mini-label">Monthly Teaching Hours</h4><div echarts [options]="hoursOpt()" class="chart"></div></div>
+            </div>
+          </section>
+
+          <!-- SECTION 6 — SCHEDULE -->
+          <section class="card glass">
+            <div class="block-head"><h2 class="block-title"><span class="material-icons">calendar_month</span> Weekly Schedule</h2></div>
+            <div class="week">
+              @for (d of weekDays; track d) {
+                <div class="week-col">
+                  <div class="week-day">{{ d }}</div>
+                  @for (s of scheduleFor(t, d); track $index) {
+                    <div class="slot" [class.online]="s.online">
+                      <div class="slot-time">{{ s.start }}–{{ s.end }}</div>
+                      <div class="slot-title">{{ s.language }} {{ s.level }}</div>
+                      <div class="slot-loc"><span class="material-icons">{{ s.online ? 'videocam' : 'meeting_room' }}</span>{{ s.location }}</div>
+                    </div>
+                  }
+                  @if (scheduleFor(t, d).length === 0) { <div class="slot empty">—</div> }
+                </div>
+              }
+            </div>
+            <div class="week-foot">
+              <span><strong>{{ t.teachingHours }}h</strong> teaching this month</span>
+              <span><strong>{{ t.availableSlots }}</strong> available slots</span>
+              <span><strong>{{ t.sessions }}</strong> upcoming sessions</span>
+            </div>
+          </section>
+        </div>
+
+        <!-- ══════ SIDE COLUMN ══════ -->
+        <aside class="col-side">
+
+          <!-- SECTION 5 — RANKING -->
+          <section class="card glass rank-card">
+            <div class="block-head"><h2 class="block-title"><span class="material-icons">leaderboard</span> Top Teachers</h2></div>
+            <div class="rank-list">
+              @for (r of svc.leaderboard(); track r.id; let i = $index) {
+                <div class="rank-row" [class.active]="r.id === t.id" (click)="select(r)">
+                  <span class="medal" [class]="'m' + (i + 1)">{{ i === 0 ? '🏆' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) }}</span>
+                  <span class="avatar sm">{{ r.initials }}</span>
+                  <div class="rank-meta">
+                    <span class="rank-name">{{ r.name }}</span>
+                    <span class="rank-stats">Success {{ r.successRate }}% · Att. {{ r.attendanceRate }}% · {{ r.studentsPromoted }} promoted</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- SECTION 7 — PERMISSIONS -->
+          <section class="card glass">
+            <div class="block-head"><h2 class="block-title"><span class="material-icons">shield</span> Permissions</h2></div>
+            <div class="perm-list">
+              @for (p of permissionDefs; track p.key) {
+                <button type="button" class="perm-row" (click)="togglePermission(t, p.key)">
+                  <span class="perm-l"><span class="material-icons">{{ p.icon }}</span>{{ p.label }}</span>
+                  <span class="toggle" [class.on]="permissionsOf(t)[p.key]"><span class="knob"></span></span>
+                </button>
+              }
+            </div>
+          </section>
+
+          <!-- SECTION 8 — ADMIN NOTES -->
+          <section class="card glass">
+            <div class="block-head"><h2 class="block-title"><span class="material-icons">lock</span> Administrative Notes</h2></div>
+            <p class="note-hint"><span class="material-icons">visibility_off</span> Private — visible to admins only.</p>
+            <textarea class="note-area" rows="3" placeholder="e.g. Excellent teacher for beginner groups. Recommended for advanced CEFR levels."
+                      [value]="noteOf(t)" (input)="updateNote(t, $any($event.target).value)"></textarea>
+          </section>
+
+          <!-- SECTION 9 — AI READY -->
+          <section class="card ai-card">
+            <div class="block-head">
+              <h2 class="block-title"><span class="material-icons">smart_toy</span> Teaching Insights</h2>
+              <span class="soon">Preview</span>
+            </div>
+            <div class="ai-list">
+              @for (a of aiInsights(t); track $index) {
+                <div class="ai-row" [class]="a.tone"><span class="material-icons">{{ a.icon }}</span><p>{{ a.text }}</p></div>
+              }
+            </div>
+            <p class="ai-foot">AI will analyze student success, attendance, engagement &amp; exam results to generate live recommendations.</p>
+          </section>
+        </aside>
+      </div>
+    }
+  }
+</div>

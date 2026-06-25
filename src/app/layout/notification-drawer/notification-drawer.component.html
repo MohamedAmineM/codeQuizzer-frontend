@@ -1,0 +1,75 @@
+@if (layout.notifOpen()) {
+  <div class="drawer-backdrop" (click)="close()"></div>
+
+  <aside class="drawer" role="dialog" aria-label="Notifications">
+    <!-- Header -->
+    <header class="drawer-head">
+      <div class="drawer-title">
+        <span class="material-icons">notifications</span>
+        <span>Notifications</span>
+        @if (store.unreadCount() > 0) {
+          <span class="head-count">{{ store.unreadCount() }}</span>
+        }
+      </div>
+      <button class="icon-x" (click)="close()" aria-label="Fermer">
+        <span class="material-icons">close</span>
+      </button>
+    </header>
+
+    <!-- Toolbar : filtre + tout marquer lu -->
+    <div class="drawer-toolbar">
+      <div class="seg">
+        <button class="seg-btn" [class.on]="filter() === 'all'" (click)="setFilter('all')">All</button>
+        <button class="seg-btn" [class.on]="filter() === 'unread'" (click)="setFilter('unread')">
+          Unread
+          @if (store.unreadCount() > 0) { <span class="seg-badge">{{ store.unreadCount() }}</span> }
+        </button>
+      </div>
+      <button class="mark-all" (click)="store.markAllAsRead()" [disabled]="store.unreadCount() === 0">
+        <span class="material-icons">done_all</span> Mark all read
+      </button>
+    </div>
+
+    <!-- Liste -->
+    <div class="drawer-body">
+      @if (store.loading()) {
+        @for (i of [1,2,3,4]; track i) {
+          <div class="notif-skel">
+            <div class="skeleton skel-ic"></div>
+            <div class="skel-lines">
+              <div class="skeleton skel-l1"></div>
+              <div class="skeleton skel-l2"></div>
+            </div>
+          </div>
+        }
+      } @else if (visible().length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">notifications_off</span>
+          <span>{{ filter() === 'unread' ? 'Aucune notification non lue' : 'Aucune notification' }}</span>
+        </div>
+      } @else {
+        @for (n of visible(); track n.id) {
+          <button class="notif-row" [class.unread]="!n.read" (click)="openNotification(n)">
+            <span class="notif-ic" [style.color]="meta(n.type).color">
+              <span class="material-icons">{{ meta(n.type).icon }}</span>
+            </span>
+            <span class="notif-main">
+              <span class="notif-top">
+                <span class="notif-title">{{ n.title }}</span>
+                <span class="notif-time">{{ n.createdAt | timeAgo }}</span>
+              </span>
+              <span class="notif-msg">{{ n.message }}</span>
+            </span>
+            @if (!n.read) { <span class="notif-dot"></span> }
+          </button>
+        }
+      }
+    </div>
+
+    <!-- Footer -->
+    <a class="drawer-foot" routerLink="/notifications" (click)="close()">
+      Voir toutes les notifications
+      <span class="material-icons">arrow_forward</span>
+    </a>
+  </aside>
+}

@@ -1,0 +1,160 @@
+<!-- ══════════════════ ONBOARDING ══════════════════ -->
+@if (step() === 'intro') {
+  <div class="onboard">
+
+    @if (existingResult(); as r) {
+      <!-- Déjà passé : le test est à usage unique → on montre le résultat -->
+      <div class="onboard-card done-card">
+        <span class="ob-badge ok"><span class="material-icons">verified</span> Placement completed</span>
+        <h1 class="ob-title">You're placed at <span class="lvl">{{ r.finalLevel ?? r.level }}</span></h1>
+        <p class="ob-sub">
+          You've already completed your placement assessment — it can be taken <strong>only once</strong>.
+          Review your detailed report below.
+        </p>
+        <div class="ob-meta">
+          <span class="ob-chip"><span class="material-icons">military_tech</span> Level {{ r.finalLevel ?? r.level }}</span>
+          <span class="ob-chip"><span class="material-icons">verified_user</span> {{ r.confidence }}% confidence</span>
+          <span class="ob-chip"><span class="material-icons">event</span> {{ r.completedAt | date:'mediumDate' }}</span>
+          <span class="ob-chip lock"><span class="material-icons">lock</span> One-time test</span>
+        </div>
+        <button class="btn btn-primary ob-start" (click)="viewResult()">
+          View my full result <span class="material-icons">insights</span>
+        </button>
+      </div>
+    } @else {
+
+    <div class="onboard-card">
+      <span class="ob-badge"><span class="material-icons">school</span> Language Placement</span>
+      <h1 class="ob-title">Discover Your Current Language Level</h1>
+      <p class="ob-sub">
+        Complete a professional assessment to identify your strengths and determine the best learning path.
+      </p>
+
+      <div class="ob-meta">
+        <span class="ob-chip"><span class="material-icons">schedule</span> 15–20 minutes</span>
+        <span class="ob-chip"><span class="material-icons">tune</span> Adaptive difficulty</span>
+        <span class="ob-chip"><span class="material-icons">workspace_premium</span> CEFR aligned</span>
+      </div>
+
+      <div class="ob-areas-title">Assessment areas</div>
+      <div class="ob-areas">
+        @for (a of areas; track a.label) {
+          <div class="ob-area">
+            <span class="ob-area-ic"><span class="material-icons">{{ a.icon }}</span></span>
+            <span class="ob-area-label"><span class="material-icons check">check</span>{{ a.label }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="ob-stepper">
+        @for (s of skills; track s.id; let i = $index) {
+          <div class="ob-step">
+            <span class="ob-step-dot">{{ i + 1 }}</span>
+            <span class="ob-step-label">{{ s.label }}</span>
+          </div>
+          @if (!$last) { <span class="ob-step-line"></span> }
+        }
+      </div>
+
+      <button class="btn btn-primary ob-start" (click)="start()">
+        Start Assessment <span class="material-icons">arrow_forward</span>
+      </button>
+    </div>
+    }
+  </div>
+}
+
+<!-- ══════════════════ SECTION INTRO ══════════════════ -->
+@if (step() === 'section') {
+  <div class="onboard">
+    <div class="section-intro">
+      <span class="si-step">Section {{ engine.sectionIndex() + 1 }} of {{ skills.length }}</span>
+      <span class="si-ic"><span class="material-icons">{{ sectionMeta().icon }}</span></span>
+      <h2 class="si-title">{{ sectionMeta().label }}</h2>
+      <p class="si-blurb">{{ sectionBlurb() }}</p>
+
+      <div class="si-progress">
+        <div class="si-bar"><div class="si-fill" [style.width.%]="engine.progress() * 100"></div></div>
+        <span class="si-progress-label">{{ engine.totalAnswered() }} / {{ engine.totalQuestions }} answered</span>
+      </div>
+
+      <button class="btn btn-primary" (click)="beginSection()">
+        Begin Section <span class="material-icons">arrow_forward</span>
+      </button>
+    </div>
+  </div>
+}
+
+<!-- ══════════════════ QUESTION ══════════════════ -->
+@if (step() === 'question' && engine.currentQuestion(); as q) {
+  <div class="runner">
+    <header class="runner-head">
+      <div class="rh-left">
+        <span class="rh-section"><span class="material-icons">{{ sectionMeta().icon }}</span>{{ sectionMeta().label }}</span>
+        <span class="rh-count">Question {{ engine.askedInSection() + 1 }} of {{ engine.sectionBudget() }}</span>
+      </div>
+      <span class="rh-overall">{{ engine.totalAnswered() }} / {{ engine.totalQuestions }}</span>
+    </header>
+    <div class="runner-progress"><div class="rp-fill" [style.width.%]="engine.progress() * 100"></div></div>
+
+    <div class="runner-body">
+      <div class="q-card">
+        <div class="q-tags">
+          <span class="badge badge-accent">{{ q.level }}</span>
+          <span class="badge badge-muted">{{ qTypeLabel() }}</span>
+          <span class="q-topic">{{ q.tag }}</span>
+        </div>
+
+        <!-- Reading passage -->
+        @if (q.type === 'reading' && engine.currentPassage(); as p) {
+          <div class="passage">
+            <div class="passage-head"><span class="material-icons">chrome_reader_mode</span>{{ p.title }}</div>
+            <p class="passage-text">{{ p.text }}</p>
+          </div>
+        }
+
+        <!-- Listening player -->
+        @if (q.type === 'listening' && q.audioScript) {
+          <app-audio-player [script]="q.audioScript" />
+        }
+
+        <h2 class="q-prompt">{{ q.prompt }}</h2>
+
+        <div class="q-options">
+          @for (opt of q.options; track $index) {
+            <button class="q-option" [class.selected]="selected() === $index" (click)="choose($index)">
+              <span class="q-letter">{{ ['A', 'B', 'C', 'D'][$index] }}</span>
+              <span class="q-opt-text">{{ opt }}</span>
+              <span class="material-icons q-check">check_circle</span>
+            </button>
+          }
+        </div>
+
+        <!-- Confidence indicator (listening) -->
+        @if (q.type === 'listening') {
+          <div class="confidence">
+            <span class="conf-label">How confident are you?</span>
+            <div class="conf-opts">
+              <button class="conf-chip" [class.on]="confidence() === 'sure'" (click)="setConfidence('sure')">
+                <span class="material-icons">thumb_up</span> Sure
+              </button>
+              <button class="conf-chip" [class.on]="confidence() === 'unsure'" (click)="setConfidence('unsure')">
+                <span class="material-icons">help_outline</span> Not sure
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="runner-actions">
+        <button class="btn btn-primary" [disabled]="selected() === null" (click)="next()">
+          @if (engine.sectionIndex() === skills.length - 1 && engine.askedInSection() + 1 >= engine.sectionBudget()) {
+            See my results <span class="material-icons">insights</span>
+          } @else {
+            Next <span class="material-icons">arrow_forward</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

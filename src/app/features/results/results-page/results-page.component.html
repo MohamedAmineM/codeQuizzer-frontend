@@ -1,0 +1,167 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Mes résultats</h1>
+      <p class="page-subtitle">Votre progression, quiz par quiz.</p>
+    </div>
+    <a class="btn btn-primary" routerLink="/category">
+      <span class="material-icons">play_arrow</span>
+      Nouveau quiz
+    </a>
+  </div>
+
+  <!-- KPIs -->
+  @if (results.loading()) {
+    <div class="stat-grid">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="stat-card"><div class="skeleton sk-stat"></div></div>
+      }
+    </div>
+  } @else {
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-icons">fact_check</span></span>
+        <div>
+          <div class="stat-value">{{ results.history().length }}</div>
+          <div class="stat-label">Quiz complétés</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon success"><span class="material-icons">trending_up</span></span>
+        <div>
+          <div class="stat-value">{{ results.successRate() }}%</div>
+          <div class="stat-label">Taux de réussite</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon warning"><span class="material-icons">emoji_events</span></span>
+        <div>
+          <div class="stat-value">{{ results.bestScore() }}%</div>
+          <div class="stat-label">Meilleur score</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon accent"><span class="material-icons">category</span></span>
+        <div>
+          <div class="stat-value">{{ results.categoryPerformance().length }}</div>
+          <div class="stat-label">Catégories explorées</div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <div class="results-grid">
+
+    <!-- Progression (bar chart CSS) -->
+    <section class="card">
+      <h2 class="card-title"><span class="material-icons">bar_chart</span> Progression des scores</h2>
+      @if (results.loading()) {
+        <div class="skeleton sk-chart"></div>
+      } @else if (chartEntries().length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">query_stats</span>
+          <p>Complétez un quiz pour voir votre progression.</p>
+        </div>
+      } @else {
+        <div class="chart">
+          @for (e of chartEntries(); track e.id) {
+            <div class="chart-col" [title]="e.quizTitle + ' — ' + e.score + '%'">
+              <div class="chart-bar-wrap">
+                <div class="chart-bar" [class]="'chart-bar ' + scoreClass(e.score)" [style.height.%]="e.score">
+                  <span class="chart-value">{{ e.score }}</span>
+                </div>
+              </div>
+              <span class="chart-label">{{ e.completedAt | date: 'd/MM' }}</span>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Performance par catégorie -->
+    <section class="card">
+      <h2 class="card-title"><span class="material-icons">donut_small</span> Par catégorie</h2>
+      @if (results.loading()) {
+        @for (i of [1, 2, 3]; track i) { <div class="skeleton sk-row"></div> }
+      } @else {
+        <div class="cat-list">
+          @for (c of results.categoryPerformance(); track c.category) {
+            <div class="cat-row">
+              <div class="cat-head">
+                <span class="cat-name">{{ c.category }}</span>
+                <span class="cat-score">{{ c.averageScore }}% · {{ c.quizzesTaken }} quiz</span>
+              </div>
+              <div class="cat-track">
+                <div class="cat-fill" [style.width.%]="c.averageScore" [style.background]="c.color"></div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Historique -->
+    <section class="card history-card">
+      <h2 class="card-title"><span class="material-icons">history</span> Quiz History</h2>
+      @if (results.loading()) {
+        @for (i of [1, 2, 3, 4]; track i) { <div class="skeleton sk-row"></div> }
+      } @else if (results.history().length === 0) {
+        <div class="empty-state">
+          <span class="material-icons">assignment</span>
+          <h3>Aucun quiz complété</h3>
+          <p>Lancez-vous : choisissez une catégorie et commencez !</p>
+          <a class="btn btn-primary" routerLink="/category">Choisir une catégorie</a>
+        </div>
+      } @else {
+        <div class="table-wrap">
+          <table class="table-pro">
+            <thead>
+              <tr>
+                <th>Quiz</th>
+                <th>Catégorie</th>
+                <th>Score</th>
+                <th>Bonnes réponses</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (e of results.history(); track e.id) {
+                <tr>
+                  <td class="cell-title">{{ e.quizTitle }}</td>
+                  <td><span class="badge badge-accent">{{ e.category }}</span></td>
+                  <td><span [class]="'score-pill ' + scoreClass(e.score)">{{ e.score }}%</span></td>
+                  <td class="cell-muted">{{ e.correctAnswers }} / {{ e.totalQuestions }}</td>
+                  <td class="cell-muted">{{ e.completedAt | date: 'd MMM y' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+    <!-- Leaderboard (placeholder) -->
+    <section class="card">
+      <h2 class="card-title"><span class="material-icons">leaderboard</span> Leaderboard
+        <span class="badge badge-warning">Bientôt</span>
+      </h2>
+      @if (results.loading()) {
+        @for (i of [1, 2, 3]; track i) { <div class="skeleton sk-row"></div> }
+      } @else {
+        <ul class="board">
+          @for (entry of results.leaderboard(); track entry.rank) {
+            <li class="board-row" [class.podium]="entry.rank <= 3">
+              <span class="board-rank" [class]="'board-rank rank-' + entry.rank">{{ entry.rank }}</span>
+              <span class="board-name">{{ entry.name }}</span>
+              <span class="board-quizzes">{{ entry.quizzesCompleted }} quiz</span>
+              <span class="board-score">{{ entry.score }}%</span>
+            </li>
+          }
+        </ul>
+        <p class="board-note">Classement global — données de démonstration en attendant l'Assessment Service.</p>
+      }
+    </section>
+
+  </div>
+</div>

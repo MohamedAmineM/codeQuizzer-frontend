@@ -1,0 +1,121 @@
+@if (result(); as r) {
+  <div class="page report">
+
+    <!-- Header / profile -->
+    <section class="hero-report">
+      <div class="hr-left">
+        <span class="hr-eyebrow">Language Profile Report</span>
+        <h1 class="hr-name">{{ r.studentName }}</h1>
+        <div class="hr-meta">
+          <span class="hr-chip"><span class="material-icons">translate</span>{{ r.language }}</span>
+          <span class="hr-chip"><span class="material-icons">event</span>{{ r.completedAt | date:'mediumDate' }}</span>
+          @if (r.status === 'approved') {
+            <span class="badge badge-success"><span class="material-icons">verified</span> Approved</span>
+          } @else if (r.status === 'overridden') {
+            <span class="badge badge-warning"><span class="material-icons">edit</span> Adjusted by teacher</span>
+          } @else {
+            <span class="badge badge-muted">Pending review</span>
+          }
+        </div>
+      </div>
+
+      <div class="hr-level">
+        <span class="hr-level-label">Overall Placement</span>
+        <span class="hr-level-badge">{{ r.finalLevel ?? r.level }}</span>
+      </div>
+
+      <div class="hr-conf">
+        <svg viewBox="0 0 120 120" class="conf-ring">
+          <circle cx="60" cy="60" r="52" class="cr-track" />
+          <circle cx="60" cy="60" r="52" class="cr-value"
+                  [attr.stroke-dasharray]="ring().circ"
+                  [attr.stroke-dashoffset]="ring().offset" />
+          <text x="60" y="58" class="cr-num">{{ r.confidence }}%</text>
+          <text x="60" y="76" class="cr-cap">confidence</text>
+        </svg>
+      </div>
+    </section>
+
+    <div class="report-grid">
+      <!-- Detailed skills analysis -->
+      <section class="card">
+        <div class="card-title"><span class="material-icons">bar_chart</span> Detailed Skills Analysis</div>
+        <div class="skill-list">
+          @for (s of skillRows(); track s.id) {
+            <div class="skill-row">
+              <span class="skill-name"><span class="material-icons">{{ s.icon }}</span>{{ s.label }}</span>
+              <div class="skill-track"><div class="skill-fill" [class]="scoreClass(s.value)" [style.width.%]="s.value"></div></div>
+              <span class="skill-val">{{ s.value }}%</span>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Radar -->
+      <section class="card radar-card">
+        <div class="card-title"><span class="material-icons">radar</span> Skill Radar</div>
+        <app-radar-chart [axes]="radarAxes()" [size]="300" />
+      </section>
+    </div>
+
+    <div class="report-grid">
+      <!-- Strengths -->
+      <section class="card">
+        <div class="card-title"><span class="material-icons" style="color:var(--success)">military_tech</span> Strengths</div>
+        <ul class="bullet good">
+          @for (s of r.strengths; track s) {
+            <li><span class="material-icons">check_circle</span>{{ s }}</li>
+          }
+        </ul>
+      </section>
+
+      <!-- Areas for improvement -->
+      <section class="card">
+        <div class="card-title"><span class="material-icons" style="color:var(--warning)">trending_up</span> Areas for Improvement</div>
+        <ul class="bullet warn">
+          @for (s of r.improvements; track s) {
+            <li><span class="material-icons">priority_high</span>{{ s }}</li>
+          }
+        </ul>
+      </section>
+    </div>
+
+    <div class="report-grid">
+      <!-- Recommended class -->
+      <section class="card rec-card">
+        <div class="card-title"><span class="material-icons">groups</span> Recommended Class</div>
+        <div class="rec-class">{{ r.recommendedClass }}</div>
+        <div class="rec-alt">Alternative: <strong>{{ r.alternativeClass }}</strong></div>
+      </section>
+
+      <!-- Learning focus -->
+      <section class="card">
+        <div class="card-title"><span class="material-icons">flag</span> Recommended Learning Focus</div>
+        <ol class="focus-list">
+          @for (f of r.learningFocus; track f) {
+            <li><span class="focus-num">{{ $index + 1 }}</span>{{ f }}</li>
+          }
+        </ol>
+      </section>
+    </div>
+
+    <div class="report-foot">
+      <span class="rf-note"><span class="material-icons">schedule</span> Completed in {{ r.durationSec }}s · shared with your teacher</span>
+      <a class="btn btn-ghost" routerLink="/learning/placement">
+        <span class="material-icons">refresh</span> Retake assessment
+      </a>
+    </div>
+  </div>
+
+} @else {
+  <div class="page">
+    <div class="empty-state">
+      <span class="material-icons">fact_check</span>
+      <h2>No placement yet</h2>
+      <p>Take the placement assessment to get your full language profile.</p>
+      <a class="btn btn-primary" routerLink="/learning/placement">
+        <span class="material-icons">play_arrow</span> Start assessment
+      </a>
+    </div>
+  </div>
+}

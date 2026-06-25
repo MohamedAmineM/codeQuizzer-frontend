@@ -1,0 +1,146 @@
+<div class="quiz-wrapper">
+
+  <!-- Header -->
+  <header class="quiz-header">
+    <div class="header-left">
+      <button class="icon-btn" (click)="quit()" title="Quitter le quiz">
+        <span class="material-icons">close</span>
+      </button>
+      <div class="header-meta">
+        <span class="category-chip">{{ categoryInfo()?.icon }} {{ quiz.selectedCategory() }}</span>
+        @if (categoryInfo(); as info) {
+          <span class="difficulty-chip"
+                [class.beginner]="info.difficulty === 'Débutant'"
+                [class.intermediate]="info.difficulty === 'Intermédiaire'"
+                [class.advanced]="info.difficulty === 'Avancé'">
+            {{ info.difficulty }}
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="header-center">
+      <span class="progress-text">
+        Question <strong>{{ quiz.progress().current }}</strong> / {{ quiz.progress().total }}
+      </span>
+    </div>
+
+    <div class="header-right">
+      <!-- Timer circulaire -->
+      <div class="timer" [class.timer-urgent]="timeLeft() < 5 && !answered()">
+        <svg viewBox="0 0 60 60">
+          <circle class="timer-track" cx="30" cy="30" r="26" />
+          <circle class="timer-progress" cx="30" cy="30" r="26"
+                  [style.stroke]="timerColor()"
+                  [attr.stroke-dasharray]="circumference"
+                  [attr.stroke-dashoffset]="timerOffset()" />
+        </svg>
+        <span class="timer-value" [style.color]="timerColor()">{{ timeLeft() }}</span>
+      </div>
+
+      <button class="skip-btn" (click)="skip()" [disabled]="answered()">
+        Passer
+        <span class="material-icons">skip_next</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Barre de progression animée -->
+  <div class="progress-bar">
+    <div class="progress-fill" [style.width.%]="quiz.progress().percent"></div>
+  </div>
+
+  <!-- Question card -->
+  @if (quiz.currentQuestion(); as q) {
+    <div class="quiz-body" [class.shake]="timedOut()">
+      <div class="question-card">
+        <div class="question-meta">
+          <span class="term-label">
+            <span class="material-icons">quiz</span>
+            Question
+          </span>
+          <span class="q-number">{{ quiz.progress().current }} sur {{ quiz.progress().total }}</span>
+        </div>
+
+        <p class="question-text">{{ q.question }}</p>
+
+        @if (q.explanation && answered()) {
+          <button class="expl-toggle" (click)="toggleExplication()">
+            <span class="material-icons">{{ showExplication() ? 'expand_less' : 'lightbulb' }}</span>
+            {{ showExplication() ? "Masquer l'explication" : "Voir l'explication" }}
+          </button>
+
+          @if (showExplication()) {
+            <div class="explication-box">{{ q.explanation }}</div>
+          }
+        }
+      </div>
+
+      <!-- Options -->
+      <p class="choose-label">Choisissez la bonne réponse</p>
+
+      <div class="options-grid">
+        @for (option of q.options; track $index) {
+          <button
+            [class]="getOptionClass($index)"
+            (click)="selectOption($index)"
+            [disabled]="answered()">
+
+            <span class="option-letter">{{ ['A','B','C','D'][$index] }}</span>
+            <span class="option-text">{{ option }}</span>
+
+            @if (answered()) {
+              @if ($index === q.correctAnswer) {
+                <span class="option-icon correct-icon"><span class="material-icons">check</span></span>
+              } @else if ($index === selectedOptionIndex()) {
+                <span class="option-icon wrong-icon"><span class="material-icons">close</span></span>
+              }
+            }
+          </button>
+        }
+      </div>
+
+      <!-- Feedback -->
+      @if (answered()) {
+        <div class="feedback-bar"
+             [class.feedback-correct]="isCorrect()"
+             [class.feedback-wrong]="!isCorrect() && !timedOut()"
+             [class.feedback-timeout]="timedOut()">
+          <span class="material-icons">
+            {{ timedOut() ? 'timer_off' : isCorrect() ? 'check_circle' : 'cancel' }}
+          </span>
+          {{
+            timedOut()
+              ? 'Temps écoulé ! Passage à la question suivante…'
+              : isCorrect()
+                ? 'Bonne réponse !'
+                : 'Incorrect — la bonne réponse est en vert.'
+          }}
+        </div>
+      }
+
+      <!-- Vous ne savez pas -->
+      @if (!answered()) {
+        <button class="dont-know-btn" (click)="skip()">Vous ne savez pas ?</button>
+      }
+
+      <!-- Bouton suivant -->
+      @if (answered() && !timedOut()) {
+        <button class="next-btn" (click)="next()">
+          {{
+            quiz.progress().current === quiz.progress().total
+              ? 'Voir mes résultats'
+              : 'Question suivante'
+          }}
+          <span class="material-icons">arrow_forward</span>
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <span class="material-icons">hourglass_empty</span>
+      <p>Aucune question disponible pour cette catégorie.</p>
+    </div>
+  }
+
+</div>

@@ -1,0 +1,538 @@
+/* ════════════════════════════════════════════════════════════════
+   CODEQUIZZER — DESIGN SYSTEM GLOBAL
+   ════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Palette */
+  --primary:        #2563EB;
+  --primary-dark:   #1E40AF;
+  --primary-light:  #DBEAFE;
+  --secondary:      #7C3AED;
+  --secondary-dark: #6D28D9;
+  --secondary-light:#EDE9FE;
+  --accent:         #06B6D4;
+  --success:        #22C55E;
+  --success-light:  #DCFCE7;
+  --warning:        #F59E0B;
+  --warning-light:  #FEF3C7;
+  --danger:         #EF4444;
+  --danger-light:   #FEE2E2;
+
+  /* Gradient & glass */
+  --gradient-brand: linear-gradient(135deg, #2563EB, #7C3AED);
+  --glass-bg:       rgba(255, 255, 255, 0.72);
+  --glass-border:   rgba(226, 232, 240, 0.7);
+
+  /* Shell metrics */
+  --navbar-h:           64px;
+  --sidebar-w:          280px;
+  --sidebar-w-collapsed: 80px;
+  --sidebar-anim:       300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --bg:             #F8FAFC;
+  --surface:        #FFFFFF;
+  --text:           #1E293B;
+  --text-muted:     #64748B;
+  --text-light:     #94A3B8;
+  --border:         #E2E8F0;
+
+  /* Radius */
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  24px;
+  --radius-full: 9999px;
+
+  /* Shadows — multi-couches, douces (signature SaaS premium) */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 2px 4px rgba(15, 23, 42, 0.04), 0 8px 16px -4px rgba(15, 23, 42, 0.10);
+  --shadow-lg: 0 4px 8px rgba(15, 23, 42, 0.04), 0 20px 40px -8px rgba(15, 23, 42, 0.16);
+  --shadow-primary: 0 4px 12px -2px rgba(37, 99, 235, 0.40), 0 2px 6px -1px rgba(37, 99, 235, 0.22);
+  --ring: 0 0 0 3px rgba(37, 99, 235, 0.30);
+
+  /* Spacing */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+
+  /* Transitions */
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; }
+
+/* Aligne les variables Bootstrap sur notre design system pour que les
+   composants Bootstrap (formulaires, etc.) héritent d'Inter et de notre thème. */
+:root {
+  --bs-body-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --bs-body-font-size: 15px;
+  --bs-body-line-height: 1.6;
+  --bs-body-color: #1E293B;
+  --bs-body-bg: #F8FAFC;
+  --bs-border-radius: 12px;
+}
+
+/* `html body` (spécificité 0,0,2) bat la règle `body` de Bootstrap quel que
+   soit l'ordre de chargement → notre typographie/couleurs gagnent toujours. */
+html body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11', 'ss01';
+}
+
+h1, h2, h3, h4 { font-weight: 700; line-height: 1.2; margin: 0; letter-spacing: -0.02em; }
+
+/* Focus visible — anneau cohérent (accessibilité / rendu enterprise).
+   On ne touche pas au border-radius : le box-shadow épouse déjà l'arrondi
+   propre à chaque élément. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+button { font-family: inherit; cursor: pointer; }
+
+a { text-decoration: none; color: inherit; }
+
+::selection { background: var(--primary-light); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-light); }
+
+/* ── Animations partagées ───────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* ── Skeleton loading ───────────────────────────────────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #EEF2F7 25%, #E2E8F0 50%, #EEF2F7 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Toasts (notifications globales) ────────────────────────────── */
+.toast-container {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 280px;
+  max-width: 380px;
+  padding: 14px 18px;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border-left: 4px solid var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  animation: fadeInUp 0.3s ease;
+}
+.toast.success { border-left-color: var(--success); }
+.toast.error   { border-left-color: var(--danger); }
+.toast.info    { border-left-color: var(--accent); }
+.toast .material-icons { font-size: 20px; }
+.toast.success .material-icons { color: var(--success); }
+.toast.error   .material-icons { color: var(--danger); }
+.toast.info    .material-icons { color: var(--accent); }
+
+/* ── Scroll reveal (directive appReveal) ────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  will-change: opacity, transform;
+}
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── Empty state générique ──────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8) var(--space-5);
+  color: var(--text-muted);
+  text-align: center;
+}
+.empty-state .material-icons { font-size: 48px; color: var(--text-light); }
+
+/* ════════════════════════════════════════════════════════════════
+   UI KIT SAAS — partagé par les pages dashboard / tables / modals
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Layout de page ─────────────────────────────────────────────── */
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5) var(--space-8);
+  animation: fadeInUp 0.35s ease;
+}
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+.page-title { font-size: 26px; letter-spacing: -0.5px; }
+.page-subtitle { margin: 4px 0 0; color: var(--text-muted); font-size: 14.5px; }
+
+/* ── Cartes ─────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-5);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.card.hoverable:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: var(--space-4);
+}
+.card-title .material-icons { font-size: 20px; color: var(--primary); }
+
+/* ── Stat cards ─────────────────────────────────────────────────── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.stat-icon .material-icons { font-size: 24px; }
+.stat-icon.success { background: var(--success-light); color: var(--success); }
+.stat-icon.warning { background: var(--warning-light); color: var(--warning); }
+.stat-icon.danger  { background: var(--danger-light);  color: var(--danger); }
+.stat-icon.accent  { background: #CFFAFE;              color: var(--accent); }
+.stat-value { font-size: 24px; font-weight: 800; line-height: 1.1; }
+.stat-label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+
+/* ── Badges & chips ─────────────────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.badge-success { background: var(--success-light); color: #047857; }
+.badge-warning { background: var(--warning-light); color: #B45309; }
+.badge-danger  { background: var(--danger-light);  color: #B91C1C; }
+.badge-muted   { background: #F1F5F9;              color: var(--text-muted); }
+.badge-accent  { background: #CFFAFE;              color: #0E7490; }
+
+/* ── Table pro ──────────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+.table-pro {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.table-pro th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.table-pro td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.table-pro tbody tr { transition: background var(--transition); }
+.table-pro tbody tr:hover { background: var(--bg); }
+.table-pro tbody tr:last-child td { border-bottom: none; }
+
+/* ── Boutons ────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+.btn .material-icons { font-size: 18px; }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  box-shadow: var(--shadow-primary);
+}
+.btn-primary:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.08); }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover:not(:disabled) { color: var(--primary); border-color: var(--primary); background: var(--primary-light); }
+
+/* ── Modal ──────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: fadeIn 0.2s ease;
+}
+.modal {
+  /* `display`, `position`, `width`, `height` sont explicites pour neutraliser
+     la classe homonyme `.modal` de Bootstrap (display:none; position:fixed),
+     qui rendait la carte invisible (overlay « transparent », non cliquable). */
+  display: block;
+  position: relative;
+  inset: auto;
+  pointer-events: auto;
+  width: 100%;
+  height: auto;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-6);
+  animation: scaleIn 0.2s ease;
+}
+
+/* ── Dark mode (structure prête — activer via data-theme="dark") ── */
+[data-theme="dark"] {
+  --bg:          #0F172A;
+  --surface:     #1E293B;
+  --text:        #F1F5F9;
+  --text-muted:  #94A3B8;
+  --text-light:  #64748B;
+  --border:      #334155;
+  --primary-light:   rgba(37, 99, 235, 0.18);
+  --secondary-light: rgba(124, 58, 237, 0.22);
+  --success-light:   rgba(34, 197, 94, 0.16);
+  --warning-light:   rgba(245, 158, 11, 0.16);
+  --danger-light:    rgba(239, 68, 68, 0.16);
+  --glass-bg:        rgba(15, 23, 42, 0.72);
+  --glass-border:    rgba(51, 65, 85, 0.7);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   OVERRIDES MODE SOMBRE — fonds/couleurs codés en dur dans les
+   composants. PLACÉS ICI (global) car data-theme est sur <html> :
+   un sélecteur [data-theme="dark"] dans un CSS de composant est
+   réécrit par l'encapsulation Angular et ne matche jamais.
+   ════════════════════════════════════════════════════════════════ */
+
+/* NB : préfixe `html` pour battre les règles scopées des composants
+   (même spécificité sinon → c'est l'ordre de cascade qui gagne). */
+
+/* Le shell (top-nav glass, sidebar, drawer, palette) utilise les tokens
+   --glass-bg / --surface qui basculent déjà en mode sombre — aucun override
+   en dur n'est nécessaire ici. */
+
+/* Scrollbar */
+html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #475569; }
+html[data-theme="dark"] ::-webkit-scrollbar-thumb:hover { background: #64748B; }
+
+/* Skeleton loading */
+html[data-theme="dark"] .skeleton {
+  background: linear-gradient(90deg, #1E293B 25%, #334155 50%, #1E293B 75%);
+  background-size: 800px 100%;
+}
+
+/* Badges muets (fonds gris clairs en dur) */
+html[data-theme="dark"] .badge-muted { background: #334155; }
+
+/* Categories — barre flottante « démarrer » (fond blanc translucide) */
+html[data-theme="dark"] .start-bar { background: rgba(30, 41, 59, 0.9); }
+
+/* Quiz — encadré d'explication (texte ambre foncé sur fond ambre clair) */
+html[data-theme="dark"] .explication-box { color: #FCD34D; }
+
+/* Home — mockup quiz décoratif (toujours sur fond sombre) */
+html[data-theme="dark"] .mq-option.correct {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6EE7B7;
+}
+
+/* Forbidden — cartes glass (fond blanc translucide) */
+html[data-theme="dark"] .fp-card.glass {
+  background: rgba(30, 41, 59, 0.72);
+  border-color: rgba(51, 65, 85, 0.9);
+}
+
+/* Notifications — survol d'un item non lu (bleu clair en dur) */
+html[data-theme="dark"] .bell-item.unread:hover { background: rgba(37, 99, 235, 0.3); }
+[data-theme="dark"] .notif-card.unread:hover { background: rgba(37, 99, 235, 0.18); }
+
+/* ════════════════════════════════════════════════════════════════
+   RTL — bascule arabe (dir="rtl" sur <html>, piloté par LanguageService)
+   ────────────────────────────────────────────────────────────────
+   Les rangées flex (navbar, cartes, items) se miroitent automatiquement
+   grâce à `dir`. On ne corrige ici QUE ce que `dir` ne gère pas seul :
+   le positionnement fixe/absolu et les transforms directionnels.
+
+   NB : préfixe `html` OBLIGATOIRE pour battre les règles scopées des
+   composants (sidebar, top-nav, app-content…) — même raison que les
+   overrides du mode sombre ci-dessus (spécificité égale sinon → c'est
+   l'ordre de cascade qui gagne, et les styles de composant arrivent après).
+   ════════════════════════════════════════════════════════════════ */
+
+/* Shell — le contenu se décale du côté droit (sidebar à droite) */
+html[dir="rtl"] .app-content {
+  margin-left: 0;
+  margin-right: var(--sidebar-offset, 0px);
+}
+@media (max-width: 1024px) {
+  html[dir="rtl"] .app-content { margin-right: 0; }
+}
+
+/* Sidebar — ancrée à droite, coulisse depuis la droite, bordure inversée */
+html[dir="rtl"] .sidebar {
+  left: auto;
+  right: 0;
+  border-right: none;
+  border-left: 1px solid var(--border);
+  transform: translateX(100%);
+}
+html[dir="rtl"] .sidebar.open { transform: translateX(0); }
+
+/* Barre d'accent de l'item actif — passe à droite */
+html[dir="rtl"] .active-bar {
+  left: auto;
+  right: 0;
+  border-radius: 4px 0 0 4px;
+}
+/* Le micro-décalage au survol part dans l'autre sens */
+html[dir="rtl"] .nav-item:hover { transform: translateX(-2px); }
+
+/* Dropdown de la navbar (avatar) — s'ouvre vers la gauche */
+html[dir="rtl"] .dropdown {
+  right: auto;
+  left: 0;
+  transform-origin: top left;
+}
+html[dir="rtl"] .dropdown-item { text-align: right; }
+
+/* Toasts — ancrés à gauche, accent de bordure inversé */
+html[dir="rtl"] .toast-container { right: auto; left: 24px; }
+html[dir="rtl"] .toast {
+  border-left: none;
+  border-right: 4px solid var(--primary);
+}
+html[dir="rtl"] .toast.success { border-right-color: var(--success); }
+html[dir="rtl"] .toast.error   { border-right-color: var(--danger); }
+html[dir="rtl"] .toast.info    { border-right-color: var(--accent); }
+
+/* Tables — en-têtes alignés à droite (restent lisibles) */
+html[dir="rtl"] .table-pro th { text-align: right; }
+
+/* ── Typographie arabe ──────────────────────────────────────────────
+   Inter ne contient pas de glyphes arabes : on garde Inter pour le latin
+   et on ajoute une pile arabe système en repli. On annule aussi le
+   crénage négatif latin, néfaste à l'arabe. */
+[lang="ar"] body {
+  font-family: 'Inter', 'Segoe UI', 'Tahoma', 'Noto Naskh Arabic', 'Geeza Pro', sans-serif;
+  letter-spacing: 0;
+}
+[lang="ar"] h1,
+[lang="ar"] h2,
+[lang="ar"] h3,
+[lang="ar"] h4 { letter-spacing: 0; }

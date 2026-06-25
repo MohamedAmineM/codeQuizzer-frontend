@@ -1,0 +1,58 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Quiz Management</h1>
+      <p class="page-subtitle">Créez, importez et suivez vos quiz.</p>
+    </div>
+    <button class="btn btn-primary import-btn" (click)="importOpen.set(true)">
+      <span class="material-icons">upload_file</span>
+      Import Quiz
+    </button>
+  </div>
+
+  <div class="card table-card">
+    @if (teacher.loading()) {
+      @for (i of [1, 2, 3, 4, 5]; track i) { <div class="skeleton sk-row"></div> }
+    } @else if (teacher.quizzes().length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">post_add</span>
+        <h3>Aucun quiz</h3>
+        <p>Importez votre premier quiz Excel pour commencer.</p>
+        <button class="btn btn-primary" (click)="importOpen.set(true)">
+          <span class="material-icons">upload_file</span> Import Quiz
+        </button>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table-pro">
+          <thead>
+            <tr>
+              <th>Quiz Title</th>
+              <th>Category</th>
+              <th>Questions</th>
+              <th>Created Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (q of teacher.quizzes(); track q.id) {
+              <tr>
+                <td class="cell-title">{{ q.title }}</td>
+                <td><span class="badge badge-accent">{{ q.category }}</span></td>
+                <td>{{ q.questionsCount }}</td>
+                <td class="cell-muted">{{ q.createdAt | date: 'd MMM y' }}</td>
+                <td><span [class]="'badge ' + statusMeta[q.status].cssClass">{{ statusMeta[q.status].label }}</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+</div>
+
+@if (importOpen()) {
+  <app-import-quiz-modal (closed)="importOpen.set(false)" />
+}

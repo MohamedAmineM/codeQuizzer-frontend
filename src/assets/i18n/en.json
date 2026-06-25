@@ -1,0 +1,52 @@
+{
+  "lang.switcher.label": "Change language",
+  "lang.switcher.current": "Current language",
+
+  "sidebar.workspace": "Workspace",
+  "sidebar.browse": "Browse",
+
+  "section.main": "Main",
+  "section.learning": "Learning",
+  "section.teacher": "Teacher",
+  "section.administration": "Administration",
+
+  "nav.home": "Home",
+  "nav.categories": "Categories",
+  "nav.dashboard": "Dashboard",
+  "nav.dashboardOverview": "Dashboard Overview",
+  "nav.myLanguages": "My Languages",
+  "nav.results": "Results",
+  "nav.placement": "Placement",
+  "nav.calendar": "Calendar",
+  "nav.notifications": "Notifications",
+  "nav.messages": "Messages",
+
+  "nav.languageJourney": "Language Journey",
+  "nav.aiCoach": "AI Coach",
+  "nav.speakingPractice": "Speaking Practice",
+  "nav.certification": "Certification",
+  "nav.achievements": "Achievements",
+  "nav.languagePassport": "Language Passport",
+
+  "nav.placements": "Placements",
+  "nav.quizManagement": "Quiz Management",
+  "nav.classManagement": "Class Management",
+  "nav.assignments": "Assignments",
+  "nav.studentReports": "Student Reports",
+  "nav.performanceAnalytics": "Performance Analytics",
+  "nav.attendanceTracking": "Attendance Tracking",
+
+  "nav.activityReport": "Activity Report",
+  "nav.users": "Users",
+  "nav.teachers": "Teachers",
+  "nav.categoriesAdmin": "Categories",
+  "nav.levels": "Levels",
+  "nav.settings": "Settings",
+  "nav.auditLogs": "Audit Logs",
+
+  "dashboard": "Dashboard",
+  "students": "Students",
+  "teachers": "Teachers",
+  "calendar": "Calendar",
+  "reports": "Reports"
+}

@@ -1,0 +1,23 @@
+/* ════════════════════════════════════════════════════════════════
+   SHELL — top-nav fixe + sidebar + contenu redimensionnable
+   ════════════════════════════════════════════════════════════════ */
+
+.app-shell {
+  padding-top: var(--navbar-h);
+  min-height: 100vh;
+}
+
+.app-content {
+  margin-left: var(--sidebar-offset, 0px);
+  transition: margin-left var(--sidebar-anim);
+  min-height: calc(100vh - var(--navbar-h));
+  display: flex;
+  flex-direction: column;
+}
+.content-inner { flex: 1 0 auto; }
+
+/* En mode compact, le contenu reste pleine largeur : la sidebar (tiroir)
+   se superpose au lieu de pousser. */
+@media (max-width: 1024px) {
+  .app-content { margin-left: 0; }
+}

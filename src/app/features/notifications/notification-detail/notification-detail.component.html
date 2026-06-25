@@ -1,0 +1,57 @@
+<div class="page detail-page">
+
+  <a class="back-link" routerLink="/notifications">
+    <span class="material-icons">arrow_back</span>
+    Retour aux notifications
+  </a>
+
+  @if (store.loading()) {
+    <div class="card">
+      <div class="skeleton sk-line w40"></div>
+      <div class="skeleton sk-line w90"></div>
+      <div class="skeleton sk-line w70"></div>
+    </div>
+  } @else if (!notification()) {
+    <div class="card">
+      <div class="empty-state">
+        <span class="material-icons">search_off</span>
+        <h3>Notification introuvable</h3>
+        <p>Elle a peut-être été supprimée.</p>
+        <a class="btn btn-primary" routerLink="/notifications">Voir toutes les notifications</a>
+      </div>
+    </div>
+  } @else {
+    @let n = notification()!;
+    <article class="card detail-card">
+      <header class="detail-head">
+        <span class="detail-icon" [style.color]="meta(n.type).color">
+          <span class="material-icons">{{ meta(n.type).icon }}</span>
+        </span>
+        <div>
+          <div class="detail-badges">
+            <span class="badge badge-muted">{{ meta(n.type).label }}</span>
+            @if (!n.read) { <span class="badge">Nouveau</span> }
+          </div>
+          <h1 class="detail-title">{{ n.title }}</h1>
+          <p class="detail-date">{{ n.createdAt | date: 'EEEE d MMMM y, HH:mm' }}</p>
+        </div>
+      </header>
+
+      <p class="detail-message">{{ n.message }}</p>
+
+      <div class="detail-actions">
+        @if (action(); as a) {
+          <button class="btn btn-primary" (click)="goToAction()">
+            {{ a.label }}
+            <span class="material-icons">arrow_forward</span>
+          </button>
+        }
+        <button class="btn btn-ghost" (click)="deleteAndBack(n)">
+          <span class="material-icons">delete_outline</span>
+          Supprimer
+        </button>
+      </div>
+    </article>
+  }
+
+</div>

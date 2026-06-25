@@ -1,0 +1,27 @@
+<app-top-nav />
+
+<div class="app-shell" [style.--sidebar-offset]="layout.sidebarWidth() + 'px'">
+  <app-sidebar />
+
+  <main class="app-content">
+    <div class="content-inner">
+      <router-outlet />
+    </div>
+    <app-footer />
+  </main>
+</div>
+
+<app-notification-drawer />
+<app-command-palette />
+
+<!-- Toasts globaux -->
+<div class="toast-container">
+  @for (toast of notify.toasts(); track toast.id) {
+    <div class="toast" [class]="'toast ' + toast.type">
+      <span class="material-icons">
+        {{ toast.type === 'success' ? 'check_circle' : toast.type === 'error' ? 'error' : 'info' }}
+      </span>
+      {{ toast.message }}
+    </div>
+  }
+</div>

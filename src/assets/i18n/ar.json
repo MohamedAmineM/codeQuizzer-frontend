@@ -1,0 +1,52 @@
+{
+  "lang.switcher.label": "تغيير اللغة",
+  "lang.switcher.current": "اللغة الحالية",
+
+  "sidebar.workspace": "مساحة العمل",
+  "sidebar.browse": "تصفّح",
+
+  "section.main": "الرئيسية",
+  "section.learning": "التعلّم",
+  "section.teacher": "المعلّم",
+  "section.administration": "الإدارة",
+
+  "nav.home": "الرئيسية",
+  "nav.categories": "الفئات",
+  "nav.dashboard": "لوحة التحكم",
+  "nav.dashboardOverview": "نظرة عامة",
+  "nav.myLanguages": "لغاتي",
+  "nav.results": "النتائج",
+  "nav.placement": "اختبار المستوى",
+  "nav.calendar": "التقويم",
+  "nav.notifications": "الإشعارات",
+  "nav.messages": "الرسائل",
+
+  "nav.languageJourney": "رحلة التعلّم",
+  "nav.aiCoach": "المدرّب الذكي",
+  "nav.speakingPractice": "ممارسة المحادثة",
+  "nav.certification": "الشهادات",
+  "nav.achievements": "الإنجازات",
+  "nav.languagePassport": "جواز اللغة",
+
+  "nav.placements": "اختبارات المستوى",
+  "nav.quizManagement": "إدارة الاختبارات",
+  "nav.classManagement": "إدارة الصفوف",
+  "nav.assignments": "الواجبات",
+  "nav.studentReports": "تقارير الطلاب",
+  "nav.performanceAnalytics": "تحليلات الأداء",
+  "nav.attendanceTracking": "تتبّع الحضور",
+
+  "nav.activityReport": "تقرير النشاط",
+  "nav.users": "المستخدمون",
+  "nav.teachers": "المعلّمون",
+  "nav.categoriesAdmin": "الفئات",
+  "nav.levels": "المستويات",
+  "nav.settings": "الإعدادات",
+  "nav.auditLogs": "سجلّات التدقيق",
+
+  "dashboard": "لوحة التحكم",
+  "students": "الطلاب",
+  "teachers": "المدرّسون",
+  "calendar": "التقويم",
+  "reports": "التقارير"
+}

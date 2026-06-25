@@ -1,0 +1,271 @@
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 240px;
+  max-width: 380px;
+  padding: 9px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  transition: all var(--transition);
+}
+.search-box:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+.search-box .material-icons { font-size: 19px; color: var(--text-light); }
+.search-box input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.role-filters { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+.filter-chip {
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+.filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+.filter-chip.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: var(--shadow-primary);
+}
+
+.table-card { padding: var(--space-3) var(--space-4); }
+
+.user-cell { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.user-name { font-weight: 600; white-space: nowrap; }
+.cell-muted { color: var(--text-muted); }
+
+.th-actions { text-align: right; }
+.actions { display: flex; justify-content: flex-end; gap: 4px; }
+.action-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+}
+.action-btn .material-icons { font-size: 19px; }
+.action-btn:hover { background: var(--primary-light); color: var(--primary); }
+.action-btn.danger:hover { background: var(--danger-light); color: var(--danger); }
+.action-btn.success:hover { background: var(--success-light); color: var(--success); }
+
+.sk-row { height: 52px; margin: 10px 0; }
+
+/* Pagination footer */
+.table-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-2) var(--space-2);
+  border-top: 1px solid var(--border);
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+}
+.foot-range { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+.pager { display: flex; align-items: center; gap: var(--space-2); }
+.pager-page { font-size: 13px; color: var(--text-muted); font-weight: 600; min-width: 120px; text-align: center; }
+.action-btn:disabled { opacity: .4; cursor: not-allowed; }
+.action-btn:disabled:hover { background: transparent; color: var(--text-muted); }
+
+/* Error-state retry button */
+.btn-retry {
+  margin-top: var(--space-3);
+  padding: 8px 18px;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-full);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all var(--transition);
+}
+.btn-retry:hover { box-shadow: var(--shadow-primary); }
+
+/* ── Dialogs d'action ──────────────────────────────────────────────── */
+.action-modal { max-width: 440px; }
+
+.action-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.action-title { font-size: 18px; font-weight: 700; color: var(--text); }
+.close-btn {
+  border: none;
+  background: transparent;
+  color: var(--text-light);
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+.close-btn:hover { background: var(--bg); color: var(--text); }
+
+.action-desc {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: var(--space-4);
+}
+
+/* Choix du rôle */
+.role-options { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-4); }
+.role-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.role-option:hover { border-color: var(--primary); background: var(--primary-light); }
+.role-option.selected { border-color: var(--primary); background: var(--primary-light); }
+.role-option .check { color: var(--primary); font-size: 20px; }
+
+/* Champ mot de passe */
+.pwd-field { display: flex; gap: var(--space-2); margin-bottom: var(--space-2); }
+.pwd-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: all var(--transition);
+}
+.pwd-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.gen-btn { padding: 8px 14px; font-size: 13px; white-space: nowrap; }
+.gen-btn .material-icons { font-size: 17px; }
+
+.field-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--danger);
+  font-size: 13px;
+  margin-bottom: var(--space-2);
+}
+.field-error .material-icons { font-size: 17px; }
+
+.action-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+}
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-2px); }
+
+.spin { animation: spin 0.9s linear infinite; font-size: 18px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Formulaire de création ────────────────────────────────────────── */
+.create-modal { max-width: 600px; }
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+.form-row { display: flex; flex-direction: column; gap: 6px; }
+.form-row.span-2 { grid-column: 1 / -1; }
+.form-label { font-size: 12.5px; font-weight: 600; color: var(--text-muted); }
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+  transition: all var(--transition);
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+.form-textarea { resize: vertical; }
+.form-row .pwd-field { margin-bottom: 0; }
+.pwd-field .form-input { flex: 1; min-width: 0; }
+.create-modal .gen-btn { padding: 0 12px; }
+
+@media (max-width: 520px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-row.span-2 { grid-column: auto; }
+}
+
+/* Sélection des matières (enseignant) */
+.subject-chips { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.subject-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.subject-chip:hover { border-color: var(--primary); color: var(--primary); }
+.subject-chip.selected {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.subject-chip .chip-ico { font-size: 15px; }
+.subject-chip .chip-check { font-size: 16px; }
+.subject-hint { font-size: 13px; color: var(--text-light); font-style: italic; }

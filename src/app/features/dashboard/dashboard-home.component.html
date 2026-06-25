@@ -1,0 +1,44 @@
+<div class="page dash">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-text">
+      <span class="hero-eyebrow">{{ auth.roleLabel() }} workspace</span>
+      <h1 class="hero-title">{{ greeting() }}, {{ firstName() }} 👋</h1>
+      <p class="hero-sub">Everything you manage lives here. Jump back in, or press
+        <kbd>Ctrl</kbd> <kbd>K</kbd> to search anywhere.</p>
+      <div class="hero-actions">
+        <button class="btn btn-light" (click)="layout.openPalette()">
+          <span class="material-icons">search</span> Quick search
+        </button>
+        @if (notifications.unreadCount() > 0) {
+          <button class="btn btn-ghost-light" (click)="layout.openNotif()">
+            <span class="material-icons">notifications</span>
+            {{ notifications.unreadCount() }} unread
+          </button>
+        }
+      </div>
+    </div>
+    <div class="hero-glow"></div>
+  </section>
+
+  <!-- Prochaines sessions (calendrier) -->
+  <app-upcoming-widget />
+
+  <!-- Quick access par section -->
+  @for (section of nav.sidebarSections(); track section.title) {
+    <section class="qa-section">
+      <h2 class="qa-title">{{ section.title }}</h2>
+      <div class="qa-grid">
+        @for (item of section.items; track item.route) {
+          <a class="qa-card" [routerLink]="item.route">
+            <span class="qa-ic"><span class="material-icons">{{ item.icon }}</span></span>
+            <span class="qa-label">{{ item.label }}</span>
+            <span class="material-icons qa-arrow">arrow_forward</span>
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+</div>

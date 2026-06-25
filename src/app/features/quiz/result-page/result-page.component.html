@@ -1,0 +1,54 @@
+<div class="result-wrapper" *ngIf="result">
+
+  <!-- Header -->
+  <header class="result-header">
+    <span class="category-pill">{{ result.category }}</span>
+    <span class="header-title">Résultat du test</span>
+    <button class="home-btn" (click)="changeCategory()">
+      <span class="material-icons">home</span>
+    </button>
+  </header>
+
+  <!-- Score hero -->
+  <section class="score-hero">
+    <div class="trophy-icon">{{ getScoreLabel().emoji }}</div>
+    <div class="score-circle" [style.border-color]="getScoreColor()">
+      <span class="score-number" [style.color]="getScoreColor()">{{ result.score }}%</span>
+      <span class="score-sub">Score final</span>
+    </div>
+    <h2 class="score-label">{{ getScoreLabel().text }}</h2>
+    <p class="score-desc">Terminé ! Prêt à soumettre votre test ?</p>
+  </section>
+
+  <!-- Stats cards -->
+  <section class="stats-grid">
+    <div class="stat-card correct">
+      <span class="stat-icon">✓</span>
+      <span class="stat-num">{{ result.correctAnswers }}</span>
+      <span class="stat-lbl">Correctes</span>
+    </div>
+    <div class="stat-card wrong">
+      <span class="stat-icon">✗</span>
+      <span class="stat-num">{{ result.wrongAnswers }}</span>
+      <span class="stat-lbl">Incorrectes</span>
+    </div>
+    <div class="stat-card total">
+      <span class="stat-icon">∑</span>
+      <span class="stat-num">{{ result.totalQuestions }}</span>
+      <span class="stat-lbl">Total</span>
+    </div>
+  </section>
+
+  <!-- Actions -->
+  <section class="actions">
+    <button class="btn-retry" (click)="retry()">
+      <span class="material-icons">refresh</span>
+      Réessayer cette catégorie
+    </button>
+    <button class="btn-change" (click)="changeCategory()">
+      <span class="material-icons">category</span>
+      Changer de catégorie
+    </button>
+  </section>
+
+</div>

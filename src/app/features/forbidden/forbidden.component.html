@@ -1,0 +1,285 @@
+<div class="forbidden-page">
+
+  <!-- Halos décoratifs (cohérents avec le hero de la home) -->
+  <div class="fp-glow g1" aria-hidden="true"></div>
+  <div class="fp-glow g2" aria-hidden="true"></div>
+
+  <div class="fp-inner">
+
+    <!-- ════════ BLOC PRINCIPAL : texte + illustration ════════ -->
+    <section class="fp-hero" aria-labelledby="fp-title">
+
+      <div class="fp-copy">
+        <span class="fp-badge">
+          <span class="material-icons" aria-hidden="true">lock</span>
+          Error 403 · Access Control
+        </span>
+
+        <p class="fp-code" aria-hidden="true">403</p>
+
+        <h1 id="fp-title" class="fp-title">Access Restricted</h1>
+
+        <p class="fp-subtitle">
+          You are signed in, but you don't have permission to access this section.
+        </p>
+        <p class="fp-support">
+          This area may require additional privileges or a different account role.
+        </p>
+
+        <!-- Actions -->
+        <div class="fp-actions">
+          <a class="btn-fp-primary" routerLink="/">
+            <span class="material-icons" aria-hidden="true">home</span>
+            Go to Home
+          </a>
+          <a class="btn-fp-secondary" routerLink="/category">
+            <span class="material-icons" aria-hidden="true">grid_view</span>
+            Browse Categories
+          </a>
+          <a class="btn-fp-tertiary" routerLink="/contact">
+            <span class="material-icons" aria-hidden="true">support_agent</span>
+            Contact Administrator
+          </a>
+        </div>
+
+        <!-- Compte à rebours de redirection (annulable — WCAG 2.2.1) -->
+        @if (!redirectCancelled()) {
+          <div class="fp-countdown" role="status" aria-live="polite">
+            <div class="fp-countdown-track" aria-hidden="true">
+              <div class="fp-countdown-bar" [style.width.%]="countdownProgress()"></div>
+            </div>
+            <span class="fp-countdown-text">
+              Redirecting to Home in <strong>{{ countdown() }}s</strong>
+            </span>
+            <button type="button" class="fp-countdown-cancel" (click)="cancelRedirect()">
+              Stay on this page
+            </button>
+          </div>
+        } @else {
+          <div class="fp-countdown cancelled" role="status">
+            <span class="material-icons" aria-hidden="true">check_circle</span>
+            <span class="fp-countdown-text">Automatic redirect cancelled.</span>
+          </div>
+        }
+      </div>
+
+      <!-- ════════ ILLUSTRATION : espace d'apprentissage verrouillé ════════ -->
+      <div class="fp-visual" aria-hidden="true">
+        <svg viewBox="0 0 540 440" xmlns="http://www.w3.org/2000/svg" class="fp-illustration">
+          <defs>
+            <linearGradient id="fpLock" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563EB"/>
+              <stop offset="100%" stop-color="#1E40AF"/>
+            </linearGradient>
+            <linearGradient id="fpAccent" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#2563EB"/>
+              <stop offset="100%" stop-color="#06B6D4"/>
+            </linearGradient>
+            <linearGradient id="fpSoft" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#DBEAFE"/>
+              <stop offset="100%" stop-color="#F8FAFC"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Halo de fond -->
+          <circle cx="270" cy="220" r="190" fill="url(#fpSoft)" opacity="0.7"/>
+          <circle cx="270" cy="220" r="150" fill="none" stroke="#2563EB"
+                  stroke-width="1.5" stroke-dasharray="6 10" opacity="0.35" class="fp-ring"/>
+
+          <!-- Fenêtre dashboard (zone d'apprentissage protégée) -->
+          <g class="float-slow">
+            <rect x="120" y="90" width="300" height="230" rx="16" fill="#FFFFFF"
+                  stroke="#E2E8F0" stroke-width="1.5"/>
+            <!-- Barre de fenêtre -->
+            <rect x="120" y="90" width="300" height="36" rx="16" fill="#F8FAFC"/>
+            <rect x="120" y="110" width="300" height="16" fill="#F8FAFC"/>
+            <circle cx="142" cy="108" r="5" fill="#EF4444" opacity="0.8"/>
+            <circle cx="160" cy="108" r="5" fill="#F59E0B" opacity="0.8"/>
+            <circle cx="178" cy="108" r="5" fill="#10B981" opacity="0.8"/>
+            <rect x="250" y="101" width="120" height="14" rx="7" fill="#E2E8F0"/>
+
+            <!-- Sidebar -->
+            <rect x="138" y="142" width="64" height="10" rx="5" fill="#DBEAFE"/>
+            <rect x="138" y="162" width="48" height="8" rx="4" fill="#E2E8F0"/>
+            <rect x="138" y="180" width="56" height="8" rx="4" fill="#E2E8F0"/>
+            <rect x="138" y="198" width="42" height="8" rx="4" fill="#E2E8F0"/>
+
+            <!-- Cartes de quiz (estompées : contenu verrouillé) -->
+            <g opacity="0.55">
+              <rect x="222" y="142" width="86" height="70" rx="10" fill="#F8FAFC" stroke="#E2E8F0"/>
+              <rect x="232" y="154" width="40" height="8" rx="4" fill="#DBEAFE"/>
+              <rect x="232" y="170" width="66" height="6" rx="3" fill="#E2E8F0"/>
+              <rect x="232" y="182" width="58" height="6" rx="3" fill="#E2E8F0"/>
+              <rect x="232" y="196" width="30" height="8" rx="4" fill="#D1FAE5"/>
+
+              <rect x="318" y="142" width="86" height="70" rx="10" fill="#F8FAFC" stroke="#E2E8F0"/>
+              <rect x="328" y="154" width="40" height="8" rx="4" fill="#FEF3C7"/>
+              <rect x="328" y="170" width="66" height="6" rx="3" fill="#E2E8F0"/>
+              <rect x="328" y="182" width="58" height="6" rx="3" fill="#E2E8F0"/>
+              <rect x="328" y="196" width="30" height="8" rx="4" fill="#DBEAFE"/>
+
+              <rect x="222" y="222" width="182" height="78" rx="10" fill="#F8FAFC" stroke="#E2E8F0"/>
+              <rect x="232" y="234" width="70" height="8" rx="4" fill="#DBEAFE"/>
+              <rect x="232" y="252" width="160" height="6" rx="3" fill="#E2E8F0"/>
+              <rect x="232" y="264" width="140" height="6" rx="3" fill="#E2E8F0"/>
+              <rect x="232" y="280" width="100" height="6" rx="3" fill="#E2E8F0"/>
+            </g>
+          </g>
+
+          <!-- Badge cadenas central -->
+          <g class="float-mid">
+            <circle cx="270" cy="218" r="56" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+            <circle cx="270" cy="218" r="44" fill="url(#fpLock)"/>
+            <!-- Anse -->
+            <path d="M254 212 v-12 a16 16 0 0 1 32 0 v12" fill="none"
+                  stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+            <!-- Corps -->
+            <rect x="248" y="210" width="44" height="34" rx="8" fill="#FFFFFF"/>
+            <circle cx="270" cy="224" r="5" fill="#1E40AF"/>
+            <rect x="267.5" y="226" width="5" height="10" rx="2.5" fill="#1E40AF"/>
+          </g>
+
+          <!-- Carte quiz flottante -->
+          <g class="float-fast">
+            <rect x="48" y="150" width="120" height="92" rx="12" fill="#FFFFFF"
+                  stroke="#E2E8F0" stroke-width="1.5"/>
+            <rect x="60" y="162" width="48" height="12" rx="6" fill="#DBEAFE"/>
+            <rect x="60" y="184" width="96" height="7" rx="3.5" fill="#E2E8F0"/>
+            <g>
+              <rect x="60" y="200" width="96" height="14" rx="7" fill="#D1FAE5"/>
+              <circle cx="70" cy="207" r="4" fill="#10B981"/>
+              <rect x="80" y="204" width="56" height="6" rx="3" fill="#10B981" opacity="0.5"/>
+            </g>
+            <g>
+              <rect x="60" y="220" width="96" height="14" rx="7" fill="#F8FAFC" stroke="#E2E8F0"/>
+              <circle cx="70" cy="227" r="4" fill="#CBD5E1"/>
+              <rect x="80" y="224" width="44" height="6" rx="3" fill="#E2E8F0"/>
+            </g>
+          </g>
+
+          <!-- Snippet de code flottant -->
+          <g class="float-mid">
+            <rect x="392" y="248" width="110" height="76" rx="12" fill="#0F172A"/>
+            <circle cx="406" cy="262" r="3.5" fill="#EF4444"/>
+            <circle cx="418" cy="262" r="3.5" fill="#F59E0B"/>
+            <circle cx="430" cy="262" r="3.5" fill="#10B981"/>
+            <rect x="404" y="276" width="56" height="6" rx="3" fill="#06B6D4" opacity="0.9"/>
+            <rect x="404" y="290" width="78" height="6" rx="3" fill="#475569"/>
+            <rect x="412" y="304" width="62" height="6" rx="3" fill="#2563EB"/>
+          </g>
+
+          <!-- Chip rôle requis -->
+          <g class="float-fast">
+            <rect x="396" y="96" width="118" height="34" rx="17" fill="#FFFFFF"
+                  stroke="#E2E8F0" stroke-width="1.5"/>
+            <circle cx="414" cy="113" r="9" fill="#FEE2E2"/>
+            <path d="M414 108 l4.5 2 v3.5 c0 3 -2 5 -4.5 6 c-2.5 -1 -4.5 -3 -4.5 -6 v-3.5 z"
+                  fill="#EF4444"/>
+            <rect x="430" y="105" width="68" height="7" rx="3.5" fill="#0F172A" opacity="0.75"/>
+            <rect x="430" y="116" width="44" height="6" rx="3" fill="#E2E8F0"/>
+          </g>
+
+          <!-- Clé flottante -->
+          <g class="float-slow">
+            <circle cx="92" cy="330" r="26" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+            <circle cx="86" cy="324" r="7" fill="none" stroke="url(#fpAccent)" stroke-width="4"/>
+            <path d="M91 329 l14 14 m-6 -2 l4 4 m-9 -9 l4 4" fill="none"
+                  stroke="url(#fpAccent)" stroke-width="4" stroke-linecap="round"/>
+          </g>
+
+          <!-- Points décoratifs -->
+          <circle cx="460" cy="180" r="6" fill="#06B6D4" opacity="0.45" class="float-fast"/>
+          <circle cx="70" cy="100" r="8" fill="#2563EB" opacity="0.3" class="float-mid"/>
+          <circle cx="500" cy="350" r="5" fill="#F59E0B" opacity="0.5" class="float-slow"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ════════ CARTES : identité + aide ════════ -->
+    <section class="fp-cards" aria-label="Account and support information">
+
+      <!-- Identité & rôle -->
+      <article class="fp-card glass">
+        <div class="fp-card-head">
+          <span class="fp-card-icon identity">
+            <span class="material-icons" aria-hidden="true">badge</span>
+          </span>
+          <h2>Your access level</h2>
+        </div>
+
+        @if (authenticated()) {
+          <div class="fp-identity">
+            <span class="fp-avatar" aria-hidden="true">{{ avatarLetter() }}</span>
+            <div class="fp-identity-info">
+              <span class="fp-identity-label">Current user</span>
+              <span class="fp-identity-name">{{ fullName() }}</span>
+            </div>
+          </div>
+
+          @if (roles().length > 0) {
+            <div class="fp-roles">
+              <span class="fp-identity-label">Current role</span>
+              <div class="fp-role-chips">
+                @for (role of roles(); track role) {
+                  <span class="fp-role-chip">{{ role }}</span>
+                }
+              </div>
+            </div>
+            <p class="fp-card-note">
+              <span class="material-icons" aria-hidden="true">info</span>
+              Your current role does not grant access to this resource.
+            </p>
+          } @else {
+            <p class="fp-card-note">
+              <span class="material-icons" aria-hidden="true">info</span>
+              Additional permissions may be required.
+            </p>
+          }
+
+          <div class="fp-card-actions">
+            <a class="fp-link" routerLink="/profile">
+              <span class="material-icons" aria-hidden="true">person</span>
+              View my profile
+            </a>
+            <button type="button" class="fp-link" (click)="requestRole()">
+              <span class="material-icons" aria-hidden="true">vpn_key</span>
+              Request a role
+              <span class="fp-soon">Soon</span>
+            </button>
+          </div>
+        } @else {
+          <p class="fp-card-note">
+            <span class="material-icons" aria-hidden="true">info</span>
+            Additional permissions may be required.
+          </p>
+        }
+      </article>
+
+      <!-- Aide -->
+      <article class="fp-card glass">
+        <div class="fp-card-head">
+          <span class="fp-card-icon help">
+            <span class="material-icons" aria-hidden="true">help_outline</span>
+          </span>
+          <h2>Need access?</h2>
+        </div>
+
+        <p class="fp-card-text">
+          If you believe this is an error, please contact the administrator.
+        </p>
+
+        <dl class="fp-help-list">
+          <div class="fp-help-row">
+            <dt><span class="material-icons" aria-hidden="true">mail_outline</span> Admin email</dt>
+            <dd><a class="fp-mail" href="mailto:admin&#64;quizcodder.com">admin&#64;quizcodder.com</a></dd>
+          </div>
+          <div class="fp-help-row">
+            <dt><span class="material-icons" aria-hidden="true">schedule</span> Response time</dt>
+            <dd>Within 24 hours</dd>
+          </div>
+        </dl>
+      </article>
+
+    </section>
+  </div>
+</div>

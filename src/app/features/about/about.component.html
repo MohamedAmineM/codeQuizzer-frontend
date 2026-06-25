@@ -1,0 +1,70 @@
+<div class="about-page">
+
+  <!-- Hero -->
+  <section class="about-hero">
+    <span class="section-tag">About Us</span>
+    <h1>Building the future of<br><span class="grad">coding education</span></h1>
+    <p>QuizCodder is on a mission to make programming education engaging, accessible and measurable.</p>
+  </section>
+
+  <!-- Who we are / Mission / Vision -->
+  <section class="about-blocks">
+
+    <div class="about-block" appReveal>
+      <div class="block-icon"><span class="material-icons">diversity_3</span></div>
+      <h2>Who We Are</h2>
+      <p>
+        QuizCodder is an innovative e-learning platform dedicated to helping developers improve
+        their coding skills through interactive assessments and practical learning.
+        Built by developers, for developers.
+      </p>
+    </div>
+
+    <div class="about-block" appReveal [revealDelay]="120">
+      <div class="block-icon"><span class="material-icons">rocket_launch</span></div>
+      <h2>Our Mission</h2>
+      <p>
+        To make programming education engaging, accessible and measurable —
+        turning every practice session into visible, lasting progress.
+      </p>
+    </div>
+
+    <div class="about-block" appReveal [revealDelay]="240">
+      <div class="block-icon"><span class="material-icons">visibility</span></div>
+      <h2>Our Vision</h2>
+      <p>
+        To become a leading platform for interactive coding education,
+        trusted by learners and companies worldwide.
+      </p>
+    </div>
+
+  </section>
+
+  <!-- Core values -->
+  <section class="values-section" appReveal>
+    <div class="section-head">
+      <span class="section-tag">Core Values</span>
+      <h2>What drives us every day</h2>
+    </div>
+
+    <div class="values-grid">
+      @for (v of values; track v.title; let i = $index) {
+        <div class="value-card" appReveal [revealDelay]="i * 80">
+          <span class="material-icons value-icon">{{ v.icon }}</span>
+          <h3>{{ v.title }}</h3>
+          <p>{{ v.description }}</p>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="about-cta" appReveal>
+    <h2>Want to be part of the journey?</h2>
+    <a class="btn-cta" routerLink="/contact">
+      Contact Us
+      <span class="material-icons">arrow_forward</span>
+    </a>
+  </section>
+
+</div>

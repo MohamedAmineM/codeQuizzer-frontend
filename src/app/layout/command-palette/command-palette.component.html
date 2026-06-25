@@ -1,0 +1,42 @@
+@if (layout.paletteOpen()) {
+  <div class="palette-overlay" (click)="close()">
+    <div class="palette" (click)="$event.stopPropagation()" role="dialog" aria-label="Command palette">
+
+      <div class="palette-search">
+        <span class="material-icons">search</span>
+        <input #searchInput type="text" placeholder="Search pages, actions…"
+               [value]="query()" (input)="onInput($event)"
+               (keydown.arrowDown)="$event.preventDefault(); move(1)"
+               (keydown.arrowUp)="$event.preventDefault(); move(-1)"
+               (keydown.enter)="$event.preventDefault(); selectActive()"
+               (keydown.escape)="close()"
+               autocomplete="off" spellcheck="false" />
+        <span class="esc-hint">esc</span>
+      </div>
+
+      <div class="palette-results">
+        @if (results().length === 0) {
+          <div class="palette-empty">
+            <span class="material-icons">search_off</span>
+            <span>No results for “{{ query() }}”</span>
+          </div>
+        } @else {
+          @for (item of results(); track item.label; let i = $index) {
+            <button class="palette-row" [class.active]="i === activeIndex()"
+                    (mouseenter)="activeIndex.set(i)" (click)="selectAt(i)">
+              <span class="row-ic"><span class="material-icons">{{ item.icon }}</span></span>
+              <span class="row-label">{{ item.label }}</span>
+              <span class="row-group">{{ item.group }}</span>
+            </button>
+          }
+        }
+      </div>
+
+      <div class="palette-foot">
+        <span><kbd>↑</kbd><kbd>↓</kbd> to navigate</span>
+        <span><kbd>↵</kbd> to select</span>
+        <span><kbd>esc</kbd> to close</span>
+      </div>
+    </div>
+  </div>
+}

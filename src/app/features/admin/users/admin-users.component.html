@@ -1,0 +1,319 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">User Management</h1>
+      <p class="page-subtitle">Comptes, rôles et statuts de la plateforme.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons">person_add</span>
+      Nouvel utilisateur
+    </button>
+  </div>
+
+  <!-- Barre d'outils : recherche + filtre par rôle (résolus côté serveur) -->
+  <div class="toolbar">
+    <div class="search-box">
+      <span class="material-icons">search</span>
+      <input type="text" placeholder="Rechercher par nom ou email…"
+             [value]="search()" (input)="onSearch($event)" />
+    </div>
+    <div class="role-filters">
+      @for (f of roleFilters; track f.value) {
+        <button class="filter-chip" [class.active]="roleFilter() === f.value" (click)="setRole(f.value)">
+          {{ f.label }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="card table-card">
+    @if (usersService.loading()) {
+      @for (i of [1, 2, 3, 4, 5]; track i) { <div class="skeleton sk-row"></div> }
+    } @else if (usersService.error()) {
+      <div class="empty-state">
+        <span class="material-icons">cloud_off</span>
+        <h3>Impossible de charger les utilisateurs</h3>
+        <p>Vérifiez votre connexion ou vos droits d'accès, puis réessayez.</p>
+        <button class="btn-retry" (click)="retry()">Réessayer</button>
+      </div>
+    } @else if (usersService.users().length === 0) {
+      <div class="empty-state">
+        <span class="material-icons">person_search</span>
+        <h3>Aucun utilisateur trouvé</h3>
+        <p>Essayez un autre terme de recherche ou un autre filtre.</p>
+      </div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table-pro">
+          <thead>
+            <tr>
+              <th>Utilisateur</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+              <th>Créé le</th>
+              <th class="th-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of usersService.users(); track u.id) {
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="user-avatar">{{ initials(u) }}</span>
+                    <span class="user-name">{{ u.firstName }} {{ u.lastName }}</span>
+                  </div>
+                </td>
+                <td class="cell-muted">{{ u.email }}</td>
+                <td>
+                  @if (u.role) {
+                    <span [class]="roleBadgeClass(u.role)">{{ roleLabels[u.role] }}</span>
+                  } @else {
+                    <span class="cell-muted">—</span>
+                  }
+                </td>
+                <td><span [class]="'badge ' + statusMeta[u.status].cssClass">{{ statusMeta[u.status].label }}</span></td>
+                <td class="cell-muted">{{ (u.createdAt | date: 'd MMM y') || '—' }}</td>
+                <td>
+                  <div class="actions">
+                    <button class="action-btn" title="Modifier le rôle" (click)="openRole(u)">
+                      <span class="material-icons">manage_accounts</span>
+                    </button>
+                    <button class="action-btn" title="Réinitialiser le mot de passe" (click)="openPassword(u)">
+                      <span class="material-icons">lock_reset</span>
+                    </button>
+                    @if (u.status === 'SUSPENDED') {
+                      <button class="action-btn success" title="Réactiver le compte" (click)="openStatus(u)">
+                        <span class="material-icons">check_circle</span>
+                      </button>
+                    } @else {
+                      <button class="action-btn danger" title="Suspendre le compte" (click)="openStatus(u)">
+                        <span class="material-icons">block</span>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination serveur -->
+      <div class="table-foot">
+        <span class="foot-range">{{ rangeLabel }}</span>
+        <div class="pager">
+          <button class="action-btn" [disabled]="!canPrev()" (click)="prev()" title="Précédent">
+            <span class="material-icons">chevron_left</span>
+          </button>
+          <span class="pager-page">Page {{ usersService.page() + 1 }} / {{ usersService.totalPages() }}</span>
+          <button class="action-btn" [disabled]="!canNext()" (click)="next()" title="Suivant">
+            <span class="material-icons">chevron_right</span>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ════════ Dialogs d'action ════════ -->
+  @if (dialog(); as kind) {
+    @if (kind === 'create') {
+      <div class="modal-overlay" (click)="closeDialog()">
+        <div class="modal create-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+          <header class="action-head">
+            <h2 class="action-title">Nouvel utilisateur</h2>
+            <button class="close-btn" (click)="closeDialog()" aria-label="Fermer">
+              <span class="material-icons">close</span>
+            </button>
+          </header>
+
+          <div class="form-grid">
+            <div class="form-row">
+              <label class="form-label">Prénom *</label>
+              <input class="form-input" [value]="createForm().firstName"
+                     (input)="updateCreate('firstName', $any($event.target).value)" placeholder="Prénom" />
+            </div>
+            <div class="form-row">
+              <label class="form-label">Nom *</label>
+              <input class="form-input" [value]="createForm().lastName"
+                     (input)="updateCreate('lastName', $any($event.target).value)" placeholder="Nom" />
+            </div>
+            <div class="form-row span-2">
+              <label class="form-label">Email *</label>
+              <input class="form-input" type="email" [value]="createForm().email"
+                     (input)="updateCreate('email', $any($event.target).value)" placeholder="email@exemple.com" />
+            </div>
+            <div class="form-row">
+              <label class="form-label">Rôle *</label>
+              <select class="form-select" [value]="createForm().role"
+                      (change)="updateCreate('role', $any($event.target).value)">
+                @for (r of assignableRoles; track r) { <option [value]="r">{{ roleLabels[r] }}</option> }
+              </select>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Mot de passe temporaire *</label>
+              <div class="pwd-field">
+                <input class="form-input" type="text" [value]="createForm().password"
+                       (input)="updateCreate('password', $any($event.target).value)" placeholder="≥ 8 caractères" />
+                <button class="btn btn-ghost gen-btn" type="button" (click)="generateCreatePassword()" title="Générer">
+                  <span class="material-icons">autorenew</span>
+                </button>
+              </div>
+            </div>
+            @if (creatingTeacher()) {
+              <div class="form-row span-2">
+                <label class="form-label">Matières enseignées</label>
+                @if (subjects().length) {
+                  <div class="subject-chips">
+                    @for (c of subjects(); track c.id) {
+                      <button type="button" class="subject-chip" [class.selected]="isSubjectSelected(c.id)"
+                              (click)="toggleSubject(c.id)">
+                        <span class="chip-ico">{{ c.icon }}</span> {{ c.name }}
+                        @if (isSubjectSelected(c.id)) { <span class="material-icons chip-check">check</span> }
+                      </button>
+                    }
+                  </div>
+                } @else {
+                  <span class="subject-hint">Aucune matière disponible — créez-en dans « Languages ».</span>
+                }
+              </div>
+            }
+            <div class="form-row">
+              <label class="form-label">Téléphone</label>
+              <input class="form-input" [value]="createForm().phone"
+                     (input)="updateCreate('phone', $any($event.target).value)" placeholder="Optionnel" />
+            </div>
+            <div class="form-row">
+              <label class="form-label">Langue native</label>
+              <input class="form-input" [value]="createForm().nativeLanguage"
+                     (input)="updateCreate('nativeLanguage', $any($event.target).value)" placeholder="Optionnel" />
+            </div>
+            <div class="form-row">
+              <label class="form-label">Niveau (CEFR)</label>
+              <select class="form-select" [value]="createForm().currentLevel"
+                      (change)="updateCreate('currentLevel', $any($event.target).value)">
+                <option value="">—</option>
+                @for (l of cefrLevels; track l) { <option [value]="l">{{ l }}</option> }
+              </select>
+            </div>
+            <div class="form-row span-2">
+              <label class="form-label">Avatar URL</label>
+              <input class="form-input" [value]="createForm().avatarUrl"
+                     (input)="updateCreate('avatarUrl', $any($event.target).value)" placeholder="https://… (optionnel)" />
+            </div>
+            <div class="form-row span-2">
+              <label class="form-label">Bio</label>
+              <textarea class="form-textarea" rows="2" [value]="createForm().bio"
+                        (input)="updateCreate('bio', $any($event.target).value)" placeholder="Optionnel"></textarea>
+            </div>
+          </div>
+
+          @if (createError()) { <p class="field-error"><span class="material-icons">error</span>{{ createError() }}</p> }
+
+          <footer class="action-foot">
+            <button class="btn btn-ghost" (click)="closeDialog()" [disabled]="submitting()">Annuler</button>
+            <button class="btn btn-primary" (click)="confirmCreate()" [disabled]="submitting()">
+              @if (submitting()) { <span class="material-icons spin">progress_activity</span> }
+              Créer
+            </button>
+          </footer>
+        </div>
+      </div>
+    } @else {
+      @if (activeUser(); as u) {
+      <div class="modal-overlay" (click)="closeDialog()">
+        <div class="modal action-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+
+          <!-- ── Modifier le rôle ── -->
+          @if (kind === 'role') {
+            <header class="action-head">
+              <h2 class="action-title">Modifier le rôle</h2>
+              <button class="close-btn" (click)="closeDialog()" aria-label="Fermer">
+                <span class="material-icons">close</span>
+              </button>
+            </header>
+            <p class="action-desc">Choisissez le rôle de <strong>{{ fullName(u) }}</strong>.</p>
+            <div class="role-options">
+              @for (r of assignableRoles; track r) {
+                <button class="role-option" [class.selected]="selectedRole() === r"
+                        (click)="selectedRole.set(r)">
+                  <span [class]="roleBadgeClass(r)">{{ roleLabels[r] }}</span>
+                  @if (selectedRole() === r) { <span class="material-icons check">check</span> }
+                </button>
+              }
+            </div>
+            <footer class="action-foot">
+              <button class="btn btn-ghost" (click)="closeDialog()" [disabled]="submitting()">Annuler</button>
+              <button class="btn btn-primary" (click)="confirmRole()"
+                      [disabled]="submitting() || !selectedRole() || selectedRole() === u.role">
+                @if (submitting()) { <span class="material-icons spin">progress_activity</span> }
+                Enregistrer
+              </button>
+            </footer>
+          }
+
+          <!-- ── Suspendre / Réactiver ── -->
+          @if (kind === 'status') {
+            <header class="action-head">
+              <h2 class="action-title">{{ willReactivate(u) ? 'Réactiver le compte' : 'Suspendre le compte' }}</h2>
+              <button class="close-btn" (click)="closeDialog()" aria-label="Fermer">
+                <span class="material-icons">close</span>
+              </button>
+            </header>
+            @if (willReactivate(u)) {
+              <p class="action-desc">
+                <strong>{{ fullName(u) }}</strong> pourra de nouveau se connecter à la plateforme.
+              </p>
+            } @else {
+              <p class="action-desc">
+                <strong>{{ fullName(u) }}</strong> ne pourra plus se connecter tant que le compte
+                reste suspendu. Aucune donnée n'est supprimée.
+              </p>
+            }
+            <footer class="action-foot">
+              <button class="btn btn-ghost" (click)="closeDialog()" [disabled]="submitting()">Annuler</button>
+              <button class="btn" [class.btn-primary]="willReactivate(u)" [class.btn-danger]="!willReactivate(u)"
+                      (click)="confirmStatus()" [disabled]="submitting()">
+                @if (submitting()) { <span class="material-icons spin">progress_activity</span> }
+                {{ willReactivate(u) ? 'Réactiver' : 'Suspendre' }}
+              </button>
+            </footer>
+          }
+
+          <!-- ── Réinitialiser le mot de passe ── -->
+          @if (kind === 'password') {
+            <header class="action-head">
+              <h2 class="action-title">Réinitialiser le mot de passe</h2>
+              <button class="close-btn" (click)="closeDialog()" aria-label="Fermer">
+                <span class="material-icons">close</span>
+              </button>
+            </header>
+            <p class="action-desc">
+              Définissez un mot de passe temporaire pour <strong>{{ fullName(u) }}</strong>.
+              Il devra le changer à sa prochaine connexion.
+            </p>
+            <div class="pwd-field">
+              <input type="text" class="pwd-input" placeholder="Mot de passe temporaire"
+                     [value]="newPassword()" (input)="newPassword.set($any($event.target).value)" />
+              <button class="btn btn-ghost gen-btn" type="button" (click)="generatePassword()" title="Générer">
+                <span class="material-icons">autorenew</span> Générer
+              </button>
+            </div>
+            @if (pwdError()) { <p class="field-error"><span class="material-icons">error</span>{{ pwdError() }}</p> }
+            <footer class="action-foot">
+              <button class="btn btn-ghost" (click)="closeDialog()" [disabled]="submitting()">Annuler</button>
+              <button class="btn btn-primary" (click)="confirmPassword()" [disabled]="submitting()">
+                @if (submitting()) { <span class="material-icons spin">progress_activity</span> }
+                Réinitialiser
+              </button>
+            </footer>
+          }
+
+        </div>
+      </div>
+      }
+    }
+  }
+
+</div>

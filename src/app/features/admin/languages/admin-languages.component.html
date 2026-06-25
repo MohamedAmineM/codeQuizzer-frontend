@@ -1,0 +1,193 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Category Management</h1>
+      <p class="page-subtitle">Catégories, affectation des enseignants et inscriptions.</p>
+    </div>
+    <button class="btn btn-primary" (click)="openCreate()">
+      <span class="material-icons">add</span> Nouvelle catégorie
+    </button>
+  </div>
+
+  <!-- KPIs globaux -->
+  @if (svc.loading()) {
+    <div class="stat-grid">
+      @for (i of [1, 2, 3, 4]; track i) { <div class="stat-card"><div class="skeleton sk-stat"></div></div> }
+    </div>
+  } @else {
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-icons">category</span></span>
+        <div><div class="stat-value">{{ svc.stats().totalCategories }}</div><div class="stat-label">Categories</div></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon accent"><span class="material-icons">how_to_reg</span></span>
+        <div><div class="stat-value">{{ svc.stats().totalEnrollments }}</div><div class="stat-label">Enrollments</div></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon success"><span class="material-icons">groups</span></span>
+        <div><div class="stat-value">{{ svc.stats().distinctStudents }}</div><div class="stat-label">Students</div></div>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><span class="material-icons">trending_up</span></span>
+        <div><div class="stat-value">{{ svc.stats().averageScore }}%</div><div class="stat-label">Avg Score</div></div>
+      </div>
+    </div>
+  }
+
+  <!-- Catégories -->
+  <h2 class="section-title"><span class="material-icons">folder</span> Catégories</h2>
+  <div class="card table-card">
+    @if (svc.loading()) {
+      @for (i of [1, 2, 3]; track i) { <div class="skeleton sk-row"></div> }
+    } @else if (svc.categories().length === 0) {
+      <div class="empty-state"><span class="material-icons">folder_off</span><p>Aucune catégorie.</p></div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table-pro">
+          <thead>
+            <tr><th>Catégorie</th><th>Niveau / Difficulté</th><th>Enseignant</th><th>Questions</th><th class="th-actions">Action</th></tr>
+          </thead>
+          <tbody>
+            @for (c of svc.categories(); track c.id) {
+              <tr>
+                <td><div class="cat-cell"><span class="cat-ico">{{ c.icon }}</span><span class="cat-name">{{ c.name }}</span></div></td>
+                <td class="cell-muted">{{ c.difficulty }}</td>
+                <td>
+                  @if (c.teacherName) {
+                    <span class="badge badge-accent">{{ c.teacherName }}</span>
+                  } @else {
+                    <span class="cell-muted">Non assigné</span>
+                  }
+                </td>
+                <td class="cell-muted">{{ c.questionCount }}</td>
+                <td class="td-actions">
+                  <button class="btn btn-ghost btn-sm" (click)="openAssign(c)">
+                    <span class="material-icons">person_add</span> Enseignant
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <!-- Rapport d'inscriptions -->
+  <h2 class="section-title"><span class="material-icons">assignment</span> Inscriptions</h2>
+  <div class="card table-card">
+    @if (svc.loading()) {
+      @for (i of [1, 2, 3]; track i) { <div class="skeleton sk-row"></div> }
+    } @else if (svc.report().length === 0) {
+      <div class="empty-state"><span class="material-icons">inbox</span><p>Aucune inscription pour l'instant.</p></div>
+    } @else {
+      <div class="table-wrap">
+        <table class="table-pro">
+          <thead>
+            <tr><th>Étudiant</th><th>Catégorie</th><th>Niveau</th><th>Score</th><th>Progression</th></tr>
+          </thead>
+          <tbody>
+            @for (r of svc.report(); track $index) {
+              <tr>
+                <td class="cell-strong">{{ r.studentName }}</td>
+                <td><span class="badge badge-accent">{{ r.categoryName }}</span></td>
+                <td><span class="level-tag">{{ r.currentLevel }}</span></td>
+                <td class="cell-muted">{{ r.score }}%</td>
+                <td>
+                  @if (r.eligibleForPromotion) {
+                    <span class="badge badge-success">{{ r.progressLabel }}</span>
+                  } @else {
+                    <span class="cell-muted">{{ r.progressLabel }}</span>
+                  }
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+</div>
+
+<!-- Modal : création de catégorie -->
+@if (showCreate()) {
+  <div class="modal-overlay" (click)="closeCreate()">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <header class="modal-head">
+        <h2 class="modal-title">Nouvelle catégorie</h2>
+        <button class="close-btn" (click)="closeCreate()" aria-label="Fermer"><span class="material-icons">close</span></button>
+      </header>
+
+      <div class="form-grid">
+        <label class="form-field span-2">
+          <span>Nom *</span>
+          <input type="text" [(ngModel)]="createForm.name" placeholder="ex. Portuguese" />
+        </label>
+        <label class="form-field">
+          <span>Icône</span>
+          <input type="text" [(ngModel)]="createForm.icon" placeholder="🌐" />
+        </label>
+        <label class="form-field">
+          <span>Niveau de départ</span>
+          <input type="text" [(ngModel)]="createForm.difficulty" placeholder="A1" />
+        </label>
+        <label class="form-field span-2">
+          <span>Description</span>
+          <input type="text" [(ngModel)]="createForm.description" placeholder="Learn Portuguese — A1 to C2" />
+        </label>
+        <label class="form-field">
+          <span>Couleur</span>
+          <input type="color" [(ngModel)]="createForm.color" />
+        </label>
+      </div>
+
+      <footer class="modal-foot">
+        <button class="btn btn-ghost" (click)="closeCreate()">Annuler</button>
+        <button class="btn btn-primary" (click)="submitCreate()" [disabled]="saving()">
+          @if (saving()) { Création… } @else { Créer }
+        </button>
+      </footer>
+    </div>
+  </div>
+}
+
+<!-- Modal : affectation d'un enseignant -->
+@if (assignFor(); as cat) {
+  <div class="modal-overlay" (click)="closeAssign()">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <header class="modal-head">
+        <h2 class="modal-title">Enseignant — {{ cat.name }}</h2>
+        <button class="close-btn" (click)="closeAssign()" aria-label="Fermer"><span class="material-icons">close</span></button>
+      </header>
+
+      <div class="form-grid">
+        <label class="form-field span-2">
+          <span>Enseignant</span>
+          <select (change)="pickTeacher($any($event.target).value)">
+            <option value="">— Choisir —</option>
+            @for (t of knownTeachers(); track t.id) { <option [value]="t.id">{{ t.name }}</option> }
+          </select>
+        </label>
+        <label class="form-field span-2">
+          <span>Sub Keycloak *</span>
+          <input type="text" [(ngModel)]="assignForm.teacherId" placeholder="20000000-…" />
+        </label>
+        <label class="form-field span-2">
+          <span>Nom affiché</span>
+          <input type="text" [(ngModel)]="assignForm.teacherName" placeholder="Tom Teacher" />
+        </label>
+      </div>
+      <p class="form-hint">Astuce : choisissez un enseignant connu, ou collez le « sub » Keycloak d'un autre enseignant.</p>
+
+      <footer class="modal-foot">
+        <button class="btn btn-ghost" (click)="closeAssign()">Annuler</button>
+        <button class="btn btn-primary" (click)="submitAssign()" [disabled]="saving()">
+          @if (saving()) { Affectation… } @else { Affecter }
+        </button>
+      </footer>
+    </div>
+  </div>
+}

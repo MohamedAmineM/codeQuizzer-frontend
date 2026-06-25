@@ -1,0 +1,54 @@
+<div class="page">
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Select the languages you want to learn</h1>
+      <p class="page-subtitle">Choisissez une ou plusieurs langues. Vous démarrerez au niveau A1.</p>
+    </div>
+  </div>
+
+  @if (loading()) {
+    <div class="lang-grid">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="skeleton" style="height: 160px; border-radius: var(--radius-lg);"></div>
+      }
+    </div>
+  } @else if (languages().length === 0) {
+    <div class="empty-state">
+      <span class="material-icons">translate</span>
+      <h3>Aucune langue disponible</h3>
+      <p>Aucune catégorie de langue n'est encore proposée. Revenez plus tard.</p>
+    </div>
+  } @else {
+    <div class="lang-grid">
+      @for (lang of languages(); track lang.id) {
+        <button type="button" class="lang-card"
+                [class.selected]="isSelected(lang.id)"
+                [style.--cat-color]="lang.color"
+                (click)="toggle(lang.id)">
+          <span class="lang-check">
+            <span class="material-icons">{{ isSelected(lang.id) ? 'check_circle' : 'radio_button_unchecked' }}</span>
+          </span>
+          <span class="lang-icon">{{ lang.icon }}</span>
+          <span class="lang-name">{{ lang.name }}</span>
+          <span class="lang-desc">{{ lang.description }}</span>
+          @if (lang.teacherName) {
+            <span class="lang-teacher"><span class="material-icons">person</span>{{ lang.teacherName }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <div class="enroll-bar">
+      <span class="enroll-count">{{ selectedCount() }} langue(s) sélectionnée(s)</span>
+      <button class="btn btn-primary" (click)="save()" [disabled]="saving() || selectedCount() === 0">
+        @if (saving()) {
+          Enregistrement…
+        } @else {
+          <span class="material-icons">save</span> Enregistrer mes langues
+        }
+      </button>
+    </div>
+  }
+
+</div>

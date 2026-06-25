@@ -1,0 +1,101 @@
+.detail { max-width: 1040px; }
+
+.back {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13.5px; font-weight: 700; color: var(--text-muted);
+  margin-bottom: var(--space-4); transition: color var(--transition);
+}
+.back:hover { color: var(--primary); }
+.back .material-icons { font-size: 18px; }
+
+.detail-grid { display: grid; grid-template-columns: minmax(320px, 420px) 1fr; gap: var(--space-4); margin-bottom: var(--space-4); }
+
+/* Radar first */
+.radar-first { display: flex; flex-direction: column; }
+.radar-first app-radar-chart { margin: auto; max-width: 340px; width: 100%; padding: var(--space-3) 0; }
+
+/* Profile */
+.prof-head { display: flex; align-items: center; gap: 14px; margin-bottom: var(--space-5); }
+.prof-avatar {
+  width: 56px; height: 56px; flex-shrink: 0; border-radius: 50%;
+  background: var(--gradient-brand); color: #fff; font-size: 24px; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.prof-name { font-size: 22px; letter-spacing: -0.4px; }
+.prof-lang { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+.prof-lang .material-icons { font-size: 16px; }
+
+.prof-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: var(--space-5); }
+.ps { display: flex; flex-direction: column; gap: 4px; padding: 12px 14px; background: var(--bg); border-radius: var(--radius-md); }
+.ps-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); }
+.ps-level { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: var(--primary); line-height: 1; }
+.ps-val { font-size: 18px; font-weight: 700; }
+.ps-val.sm { font-size: 14px; }
+
+.insight { display: flex; gap: 10px; padding: 14px 16px; border-radius: var(--radius-md); background: var(--secondary-light); }
+.insight .material-icons { color: var(--secondary); font-size: 20px; flex-shrink: 0; }
+.insight p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--text); }
+
+/* Recommendation */
+.rec { margin-bottom: var(--space-4); }
+.rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); }
+.rec-box { padding: var(--space-4); border-radius: var(--radius-lg); background: var(--bg); border: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+.rec-box.primary { background: linear-gradient(135deg, var(--primary-light), var(--secondary-light)); border-color: transparent; }
+.rec-cap { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-light); }
+.rec-main { font-size: 19px; font-weight: 800; letter-spacing: -0.3px; }
+.rec-box.primary .rec-main { color: var(--primary); }
+.rec-main.alt { font-size: 16px; }
+
+/* Skills */
+.skill-list { display: flex; flex-direction: column; gap: 14px; }
+.skill-row { display: grid; grid-template-columns: 140px 1fr 44px; align-items: center; gap: 12px; }
+.skill-name { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; }
+.skill-name .material-icons { font-size: 18px; color: var(--text-muted); }
+.skill-track { height: 10px; border-radius: var(--radius-full); background: var(--bg); overflow: hidden; }
+.skill-fill { height: 100%; border-radius: var(--radius-full); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+.skill-fill.great { background: linear-gradient(90deg, var(--success), #16a34a); }
+.skill-fill.good  { background: var(--gradient-brand); }
+.skill-fill.fair  { background: linear-gradient(90deg, var(--warning), #d97706); }
+.skill-fill.low   { background: linear-gradient(90deg, var(--danger), #dc2626); }
+.skill-val { font-size: 14px; font-weight: 800; text-align: right; }
+
+/* Summary */
+.sum-block + .sum-block { margin-top: var(--space-4); }
+.sum-h { display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; }
+.sum-h.good { color: var(--success); }
+.sum-h.warn { color: var(--warning); }
+.bullet { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.bullet li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; font-weight: 500; line-height: 1.45; }
+.bullet .material-icons { font-size: 19px; flex-shrink: 0; }
+.bullet.good .material-icons { color: var(--success); }
+.bullet.warn .material-icons { color: var(--warning); }
+
+/* Class management */
+.manage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); margin-bottom: var(--space-5); }
+.mg-action { display: flex; flex-direction: column; gap: 8px; }
+.mg-label { font-size: 13px; font-weight: 700; color: var(--text-muted); }
+.mg-row { display: flex; gap: 10px; }
+.select, .textarea {
+  font-family: inherit; font-size: 14px; color: var(--text);
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 12px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+.select { flex: 1; height: 42px; }
+.select:focus, .textarea:focus { outline: none; border-color: var(--primary); box-shadow: var(--ring); }
+.textarea { width: 100%; resize: vertical; line-height: 1.5; }
+.mg-comment { display: flex; flex-direction: column; gap: 8px; }
+.mg-comment-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.reviewed { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-light); }
+.reviewed .material-icons { font-size: 16px; }
+.mg-future { display: flex; align-items: center; gap: 8px; margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px dashed var(--border); font-size: 13px; color: var(--text-muted); }
+.mg-future .material-icons { font-size: 18px; color: var(--text-light); }
+
+.empty-state h2 { font-size: 20px; margin-top: 8px; }
+.empty-state .btn { margin-top: var(--space-3); }
+
+@media (max-width: 860px) {
+  .detail-grid { grid-template-columns: 1fr; }
+  .rec-grid { grid-template-columns: 1fr; }
+  .manage-grid { grid-template-columns: 1fr; }
+  .prof-stats { grid-template-columns: 1fr 1fr; }
+}

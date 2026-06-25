@@ -1,0 +1,52 @@
+{
+  "lang.switcher.label": "Changer de langue",
+  "lang.switcher.current": "Langue actuelle",
+
+  "sidebar.workspace": "Espace de travail",
+  "sidebar.browse": "Parcourir",
+
+  "section.main": "Principal",
+  "section.learning": "Apprentissage",
+  "section.teacher": "Enseignant",
+  "section.administration": "Administration",
+
+  "nav.home": "Accueil",
+  "nav.categories": "Catégories",
+  "nav.dashboard": "Tableau de bord",
+  "nav.dashboardOverview": "Vue d'ensemble",
+  "nav.myLanguages": "Mes langues",
+  "nav.results": "Résultats",
+  "nav.placement": "Test de niveau",
+  "nav.calendar": "Calendrier",
+  "nav.notifications": "Notifications",
+  "nav.messages": "Messages",
+
+  "nav.languageJourney": "Parcours linguistique",
+  "nav.aiCoach": "Coach IA",
+  "nav.speakingPractice": "Expression orale",
+  "nav.certification": "Certification",
+  "nav.achievements": "Réussites",
+  "nav.languagePassport": "Passeport linguistique",
+
+  "nav.placements": "Tests de niveau",
+  "nav.quizManagement": "Gestion des quiz",
+  "nav.classManagement": "Gestion des classes",
+  "nav.assignments": "Devoirs",
+  "nav.studentReports": "Rapports élèves",
+  "nav.performanceAnalytics": "Analyses de performance",
+  "nav.attendanceTracking": "Suivi des présences",
+
+  "nav.activityReport": "Rapport d'activité",
+  "nav.users": "Utilisateurs",
+  "nav.teachers": "Enseignants",
+  "nav.categoriesAdmin": "Catégories",
+  "nav.levels": "Niveaux",
+  "nav.settings": "Paramètres",
+  "nav.auditLogs": "Journaux d'audit",
+
+  "dashboard": "Tableau de bord",
+  "students": "Étudiants",
+  "teachers": "Enseignants",
+  "calendar": "Calendrier",
+  "reports": "Rapports"
+}
