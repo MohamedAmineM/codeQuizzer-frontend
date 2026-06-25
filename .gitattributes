@@ -1,0 +1,13 @@
+# Fins de ligne — forcer LF pour les fichiers interprétés sous Linux
+# (conteneurs Docker, agents CI Linux/Kubernetes). Évite qu'un checkout
+# Windows (CRLF) ne casse Nginx/Docker dans l'image. Robustesse cross-platform.
+Dockerfile      text eol=lf
+*.conf          text eol=lf
+*.sh            text eol=lf
+.dockerignore   text eol=lf
+Jenkinsfile     text eol=lf
+
+# Outils spécifiques Windows : conserver CRLF
+*.bat           text eol=crlf
+*.cmd           text eol=crlf
+*.ps1           text eol=crlf

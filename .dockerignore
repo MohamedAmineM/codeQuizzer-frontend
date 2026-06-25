@@ -1,0 +1,37 @@
+# Contexte de build Docker — on n'envoie au démon QUE ce qui est nécessaire
+# au `npm ci` + `ng build`. Tout le reste est exclu (build plus rapide, image
+# plus sûre : pas de secrets, pas d'historique git, pas de node_modules hôte).
+
+# Dépendances & sorties (reconstruites DANS l'image)
+node_modules
+dist
+.angular
+
+# Contrôle de version / CI
+.git
+.gitignore
+.github
+Jenkinsfile
+
+# Docker (inutile dans le contexte)
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# IDE / éditeurs
+.idea
+.vscode
+.editorconfig
+
+# Docs & artefacts hors-app
+docs
+keycloak-themes
+coverage
+*.md
+
+# Logs & divers
+npm-debug.log*
+yarn-error.log*
+*.log
+.DS_Store
+Thumbs.db
