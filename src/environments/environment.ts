@@ -7,9 +7,9 @@
 export const environment = {
   production: true,
   /** API Gateway — the single backend entry point. */
-  apiUrl: 'https://api.example.com',
+  apiUrl: 'http://localhost:8888',
   keycloak: {
-    url: 'https://auth.example.com',
+    url: 'http://localhost:8090',
     realm: 'mmnassri',
     clientId: 'quiz-app',
   },
