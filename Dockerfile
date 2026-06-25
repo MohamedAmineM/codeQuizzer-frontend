@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.7
 ###############################################################################
 #  CodeQuizzer Frontend — Image de production (multi-stage : Node build → Nginx)
 #  Résultat : une image Nginx légère servant le build Angular statique.
